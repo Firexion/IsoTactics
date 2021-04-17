@@ -4,6 +4,8 @@ using UnityEngine;
 public class TacticsMove : MonoBehaviour
 {
 
+    protected enum State { Falling, Jumping, MovingToEdge, None };
+
     List<Tile> selectableTiles = new List<Tile>();
     GameObject[] tiles;
 
@@ -21,9 +23,7 @@ public class TacticsMove : MonoBehaviour
 
     float halfHeight = 0;
 
-    bool fallingDown = false;
-    bool jumpingUp = false;
-    bool movingToEdge = false;
+    protected State state = State.None;
     Vector3 jumpTarget;
 
     protected void Init()
@@ -125,7 +125,6 @@ public class TacticsMove : MonoBehaviour
             if (Vector3.Distance(transform.position, target) >= 0.05f)
             {
                 bool jump = transform.position.y != target.y;
-                
                 if (jump)
                 {
                     Jump(target);
@@ -182,21 +181,20 @@ public class TacticsMove : MonoBehaviour
     void Jump(Vector3 target)
     {
         // State machine
-        if (fallingDown)
+        switch (state)
         {
-            FallDownward(target);
-        }
-        else if (jumpingUp)
-        {
-            JumpUpward(target);
-        }
-        else if (movingToEdge)
-        {
-            MoveToEdge();
-        }
-        else
-        {
-            PrepareJump(target);
+            case (State.Falling):
+                FallDownward(target);
+                break;
+            case (State.Jumping):
+                JumpUpward(target);
+                break;
+            case (State.MovingToEdge):
+                MoveToEdge();
+                break;
+            default:
+                PrepareJump(target);
+                break;
         }
     }
 
@@ -206,19 +204,15 @@ public class TacticsMove : MonoBehaviour
         target.y = transform.position.y;
         CalculateHeading(target);
 
+        // Going down
         if (transform.position.y > targetY)
         {
-            fallingDown = false;
-            jumpingUp = false;
-            movingToEdge = true;
-
+            state = State.MovingToEdge;
             jumpTarget = transform.position + (target - transform.position) / 2.0f;
         } 
-        else
+        else // Going up
         {
-            fallingDown = false;
-            jumpingUp = true;
-            movingToEdge = false;
+            state = State.Jumping;
 
             velocity = heading * moveSpeed / 3.0f;
 
@@ -233,9 +227,7 @@ public class TacticsMove : MonoBehaviour
 
         if (transform.position.y <= target.y)
         {
-            fallingDown = false;
-            jumpingUp = false;
-            movingToEdge = false;
+            state = State.None;
 
             Vector3 p = transform.position;
             p.y = target.y;
@@ -251,9 +243,7 @@ public class TacticsMove : MonoBehaviour
 
         if (transform.position.y > target.y)
         {
-            jumpingUp = false;
-            fallingDown = true;
-
+            state = State.Falling;
         }
     }
 
@@ -265,8 +255,7 @@ public class TacticsMove : MonoBehaviour
         }
         else
         {
-            movingToEdge = false;
-            fallingDown = true;
+            state = State.Falling;
 
             velocity /= 4.0f;
             velocity.y = 1.5f;
