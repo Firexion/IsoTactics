@@ -13,12 +13,17 @@ public class PlayerMove : TacticsMove
     // Update is called once per frame
     void Update()
     {
-       if (!moving)
+        if (!turn)
+        {
+            return;
+        }
+        
+        if (!moving)
         {
             FindSelectableTiles();
             CheckMouse();
         }
-       else
+        else
         {
             Move(); 
         }
@@ -26,23 +31,22 @@ public class PlayerMove : TacticsMove
 
     void CheckMouse()
     {
-        if (Input.GetMouseButtonUp(0)) // Left Click 1 time only
+        if (!Input.GetMouseButtonUp(0)) // Left Click 1 time only
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            return;
+        }
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.collider.tag == "Tile")
-                {
-                    Tile t = hit.collider.GetComponent<Tile>();
-                    if (t.selectable)
-                    {
-                        // todo move target
-                        MoveToTile(t);
-                    }
-                }
-            }
+        RaycastHit hit;
+        if (!Physics.Raycast(ray, out hit) || !hit.collider.CompareTag("Tile"))
+        {
+            return;
+        }
+        Tile t = hit.collider.GetComponent<Tile>();
+        if (t.selectable)
+        {
+            // todo move target
+            MoveToTile(t);
         }
     }
 }

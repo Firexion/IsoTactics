@@ -35,11 +35,50 @@ public class TurnManager : MonoBehaviour
         StartTurn();
     }
 
-    static void StartTurn()
+    public static void StartTurn()
     {
         if (turnTeam.Count > 0)
         {
-
+            turnTeam.Peek().BeginTurn();
         }
+    }
+
+    public static void EndTurn()
+    {
+        TacticsMove unit = turnTeam.Dequeue();
+        unit.EndTurn();
+
+        if (turnTeam.Count > 0)
+        {
+            StartTurn();
+        }
+        else
+        {
+            string team = turnKey.Dequeue();
+            turnKey.Enqueue(team);
+            InitTeamTurnQueue();
+        }
+    }
+
+    public static void AddUnit(TacticsMove unit)
+    {
+        List<TacticsMove> list;
+
+        if (!units.ContainsKey(unit.tag))
+        {
+            list = new List<TacticsMove>();
+            units[unit.tag] = list;
+
+            if (!turnKey.Contains(unit.tag))
+            {
+                turnKey.Enqueue(unit.tag);
+            }
+        }
+        else
+        {
+            list = units[unit.tag];
+        }
+        
+        list.Add(unit);
     }
 }
