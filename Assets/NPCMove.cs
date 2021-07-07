@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class NPCMove : TacticsMove
 {
-    private GameObject target;
+    private GameObject _target;
     // Start is called before the first frame update
     void Start()
     {
@@ -13,7 +13,7 @@ public class NPCMove : TacticsMove
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!turn)
         {
@@ -33,28 +33,26 @@ public class NPCMove : TacticsMove
         }  
     }
 
-    void CalculatePath()
+    private void CalculatePath()
     {
-        Tile targetTile = GetTargetTile(target);
+        var targetTile = GetTargetTile(_target);
         FindPath(targetTile);
     }
 
-    void FindNearestTarget()
+    private void FindNearestTarget()
     {
-        GameObject[] targets = GameObject.FindGameObjectsWithTag("Player");
+        var targets = GameObject.FindGameObjectsWithTag("Player");
         GameObject nearest = null;
-        float distance = Mathf.Infinity;
+        var distance = Mathf.Infinity;
 
         foreach (var obj in targets)
         {
-            float d = Vector3.Distance(transform.position, obj.transform.forward);
-            if (d < distance)
-            {
-                nearest = obj;
-                distance = d;
-            }
+            var d = Vector3.Distance(transform.position, obj.transform.forward);
+            if (d >= distance) continue;
+            nearest = obj;
+            distance = d;
         }
         
-        target = nearest;
+        _target = nearest;
     }
 }

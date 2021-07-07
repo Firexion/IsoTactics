@@ -21,30 +21,36 @@ public class Tile : MonoBehaviour
     public float g = 0;  // Cost from processed tile to destination
     public float h = 0;  // Hueristic cost = G + H
 
+    private Renderer selectableRenderer;
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        selectableRenderer = transform.GetChild(0).GetComponent<Renderer>();
+        selectableRenderer.enabled = false;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (current)
         {
-            GetComponent<Renderer>().material.color = Color.magenta;
+            selectableRenderer.enabled = true;
+            selectableRenderer.material.color = Color.magenta;
         }
         else if (target)
         {
-            GetComponent<Renderer>().material.color = Color.green;
+            selectableRenderer.enabled = true;
+            selectableRenderer.material.color = Color.green;
         }
         else if (selectable)
         {
-            GetComponent<Renderer>().material.color = Color.red;
+            selectableRenderer.enabled = true;
+            selectableRenderer.material.color = Color.blue;
         }
         else
         {
-            GetComponent<Renderer>().material.color = Color.white;
+            selectableRenderer.enabled = false;
         }
     }
 
@@ -73,12 +79,12 @@ public class Tile : MonoBehaviour
 
     public void CheckTile(Vector3 direction, float jumpHeight, Tile target)
     {
-        Vector3 halfExtents = new Vector3(0.25f, (1 + jumpHeight) / 2.0f, 0.25f);
-        Collider[] colliders = Physics.OverlapBox(transform.position + direction, halfExtents);
+        var halfExtents = new Vector3(0.25f, (1 + jumpHeight) / 2.0f, 0.25f);
+        var colliders = Physics.OverlapBox(transform.position + direction, halfExtents);
 
-        foreach (Collider item in colliders)
+        foreach (var item in colliders)
         {
-            Tile tile = item.GetComponent<Tile>();
+            var tile = item.GetComponent<Tile>();
             if (tile != null && tile.walkable)
             {
                 RaycastHit hit;

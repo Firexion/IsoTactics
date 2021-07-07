@@ -3,9 +3,18 @@ using UnityEngine;
 
 public class TacticsMove : MonoBehaviour
 {
+    private const int MoveStraightCost = 10;
+    private const int MoveDiagonalCost = 14;
+
     public bool turn = false;
 
-    protected enum State { Falling, Jumping, MovingToEdge, None };
+    protected enum State
+    {
+        Falling,
+        Jumping,
+        MovingToEdge,
+        None
+    };
 
     List<Tile> selectableTiles = new List<Tile>();
     GameObject[] tiles;
@@ -14,7 +23,7 @@ public class TacticsMove : MonoBehaviour
     Tile currentTile;
 
     public bool moving = false;
-    public int move = 5;
+    public int moveRange = 5;
     public float jumpHeight = 2;
     public float moveSpeed = 2;
     public float jumpVelocity = 4.5f;
@@ -36,13 +45,13 @@ public class TacticsMove : MonoBehaviour
         TurnManager.AddUnit(this);
     }
 
-    public void GetCurrentTile()
+    private void GetCurrentTile()
     {
         currentTile = GetTargetTile(gameObject);
         currentTile.current = true;
     }
 
-    public Tile GetTargetTile(GameObject target)
+    protected static Tile GetTargetTile(GameObject target)
     {
         RaycastHit hit;
         Tile tile = null;
@@ -51,7 +60,6 @@ public class TacticsMove : MonoBehaviour
         {
             tile = hit.collider.GetComponent<Tile>();
         }
-
         return tile;
     }
 
@@ -59,9 +67,9 @@ public class TacticsMove : MonoBehaviour
     {
         //tiles = GameObject.FindGameObjectsWithTag("Tile");
 
-        foreach (GameObject tile in tiles)
+        foreach (var tile in tiles)
         {
-            Tile t = tile.GetComponent<Tile>();
+            var t = tile.GetComponent<Tile>();
             t.FindNeighbors(jumpHeight, target);
         }
     }
@@ -71,7 +79,7 @@ public class TacticsMove : MonoBehaviour
         ComputeAdjacencyLists(jumpHeight, null);
         GetCurrentTile();
 
-        Queue<Tile> process = new Queue<Tile>();
+        var process = new Queue<Tile>();
 
         process.Enqueue(currentTile);
         currentTile.visited = true;
@@ -79,14 +87,14 @@ public class TacticsMove : MonoBehaviour
 
         while (process.Count > 0)
         {
-            Tile t = process.Dequeue();
+            var t = process.Dequeue();
 
             selectableTiles.Add(t);
             t.selectable = true;
 
-            if (t.distance < move)
+            if (t.distance < moveRange)
             {
-                foreach (Tile tile in t.adjacencyList)
+                foreach (var tile in t.adjacencyList)
                 {
                     if (!tile.visited)
                     {
@@ -106,7 +114,7 @@ public class TacticsMove : MonoBehaviour
         tile.target = true;
         moving = true;
 
-        Tile next = tile;
+        var next = tile;
         while (next != null)
         {
             path.Push(next);
@@ -118,8 +126,8 @@ public class TacticsMove : MonoBehaviour
     {
         if (path.Count > 0)
         {
-            Tile t = path.Peek();
-            Vector3 target = t.transform.position;
+            var t = path.Peek();
+            var target = t.transform.position;
 
             // Calculate the unit's position
             target.y += halfHeight + t.GetComponent<Collider>().bounds.extents.y;
@@ -127,8 +135,7 @@ public class TacticsMove : MonoBehaviour
 
             if (Vector3.Distance(transform.position, target) >= 0.05f)
             {
-                bool jump = transform.position.y != target.y;
-                if (jump)
+                if (transform.position.y != target.y)
                 {
                     Jump(target);
                 }
@@ -137,6 +144,7 @@ public class TacticsMove : MonoBehaviour
                     CalculateHeading(target);
                     SetHorizontalVelocity();
                 }
+
                 // Locomotion (Add animation here)
                 transform.forward = heading;
                 transform.position += velocity * Time.deltaTime;
@@ -163,7 +171,8 @@ public class TacticsMove : MonoBehaviour
             currentTile.current = false;
             currentTile = null;
         }
-        foreach (Tile tile in selectableTiles)
+
+        foreach (var tile in selectableTiles)
         {
             tile.Reset();
         }
@@ -204,7 +213,7 @@ public class TacticsMove : MonoBehaviour
 
     void PrepareJump(Vector3 target)
     {
-        float targetY = target.y;
+        var targetY = target.y;
         target.y = transform.position.y;
         CalculateHeading(target);
 
@@ -213,14 +222,14 @@ public class TacticsMove : MonoBehaviour
         {
             state = State.MovingToEdge;
             jumpTarget = transform.position + (target - transform.position) / 2.0f;
-        } 
+        }
         else // Going up
         {
             state = State.Jumping;
 
             velocity = heading * moveSpeed / 3.0f;
 
-            float difference = targetY - transform.position.y;
+            var difference = targetY - transform.position.y;
             velocity.y = jumpVelocity * (0.5f + difference / 2.0f);
         }
     }
@@ -233,7 +242,7 @@ public class TacticsMove : MonoBehaviour
         {
             state = State.None;
 
-            Vector3 p = transform.position;
+            var p = transform.position;
             p.y = target.y;
             transform.position = p;
 
@@ -268,7 +277,7 @@ public class TacticsMove : MonoBehaviour
 
     protected Tile FindLowestF(List<Tile> list)
     {
-        Tile lowest = list[0];
+        var lowest = list[0];
         foreach (var t in list)
         {
             if (t.f < lowest.f)
@@ -282,23 +291,28 @@ public class TacticsMove : MonoBehaviour
         return lowest;
     }
 
+    /**
+     * Checks if the NPC can reach the end tile based on the movement range
+     */
     protected Tile FindEndTile(Tile t)
     {
-        Stack<Tile> tempPath = new Stack<Tile>();
-        Tile next = t.parent;
+        var tempPath = new Stack<Tile>();
+        var next = t.parent;
         while (next != null)
         {
             tempPath.Push(next);
             next = next.parent;
         }
 
-        if (tempPath.Count <= move)
+        // End tile is reachable.
+        if (tempPath.Count <= moveRange)
         {
             return t.parent;
         }
 
+        // End tile isn't reachable. Find closest tile to end that is reachable
         Tile endTile = null;
-        for (int i = 0; i <= move; i++)
+        for (var i = 0; i <= moveRange; i++)
         {
             endTile = tempPath.Pop();
         }
@@ -311,18 +325,19 @@ public class TacticsMove : MonoBehaviour
         ComputeAdjacencyLists(jumpHeight, target);
         GetCurrentTile();
 
-        List<Tile> openList = new List<Tile>();
-        List<Tile> closedList = new List<Tile>();
-        
+        var openList = new List<Tile>();
+        var closedList = new List<Tile>();
+
         openList.Add(currentTile);
         currentTile.h = Vector3.Distance(currentTile.transform.position, target.transform.position);
         currentTile.f = currentTile.h;
 
         while (openList.Count > 0)
         {
-            Tile t = FindLowestF(openList);
+            var t = FindLowestF(openList);
             closedList.Add(t);
 
+            // Reached the target, Just move there
             if (t == target)
             {
                 actualTargetTile = FindEndTile(t);
@@ -330,6 +345,7 @@ public class TacticsMove : MonoBehaviour
                 return;
             }
 
+            // Didn't reach the tile, need to check all the adjacent tiles to this one
             foreach (var tile in t.adjacencyList)
             {
                 if (closedList.Contains(tile))
@@ -338,26 +354,28 @@ public class TacticsMove : MonoBehaviour
                 }
                 else if (openList.Contains(tile))
                 {
-                    float tempG = t.g + Vector3.Distance(tile.transform.position, t.transform.position);
-                    if (tempG < tile.g)
-                    {
-                        tile.parent = t;
-                        tile.g = tempG;
-                        tile.f = tile.g + tile.h;
-                    }
+                    // Already on the list but check if this one is a faster path
+                    var tempG = t.g + Vector3.Distance(tile.transform.position, t.transform.position);
+                    if (tempG >= tile.g) continue;
+
+                    tile.parent = t;
+                    tile.g = tempG;
+                    tile.f = tile.g + tile.h;
                 }
                 else
                 {
+                    // Calc ghf and add to open list
                     tile.parent = t;
-                    tile.g = t.g + Vector3.Distance(tile.transform.position, t.transform.position);
-                    tile.h = Vector3.Distance(tile.transform.position, target.transform.position);
+                    var position = tile.transform.position;
+                    tile.g = t.g + Vector3.Distance(position, t.transform.position);
+                    tile.h = Vector3.Distance(position, target.transform.position);
                     tile.f = tile.g + tile.h;
-                    
+
                     openList.Add(tile);
                 }
             }
         }
-        
+
         // TODO What if there is no path to target tile
         Debug.Log("Path not found");
     }

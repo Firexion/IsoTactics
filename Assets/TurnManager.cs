@@ -25,9 +25,9 @@ public class TurnManager : MonoBehaviour
 
     static void InitTeamTurnQueue()
     {
-        List<TacticsMove> teamList = units[turnKey.Peek()];
+        var teamList = units[turnKey.Peek()];
 
-        foreach (TacticsMove unit in teamList)
+        foreach (var unit in teamList)
         {
             turnTeam.Enqueue(unit);
         }
@@ -45,7 +45,7 @@ public class TurnManager : MonoBehaviour
 
     public static void EndTurn()
     {
-        TacticsMove unit = turnTeam.Dequeue();
+        var unit = turnTeam.Dequeue();
         unit.EndTurn();
 
         if (turnTeam.Count > 0)
@@ -54,7 +54,7 @@ public class TurnManager : MonoBehaviour
         }
         else
         {
-            string team = turnKey.Dequeue();
+            var team = turnKey.Dequeue();
             turnKey.Enqueue(team);
             InitTeamTurnQueue();
         }

@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class PlayerMove : TacticsMove
 {
+    [SerializeField] private Camera cam;
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         Init();        
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!turn)
         {
@@ -35,14 +36,13 @@ public class PlayerMove : TacticsMove
         {
             return;
         }
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var ray = cam.ScreenPointToRay(Input.mousePosition);
 
-        RaycastHit hit;
-        if (!Physics.Raycast(ray, out hit) || !hit.collider.CompareTag("Tile"))
+        if (!Physics.Raycast(ray, out var hit) || !hit.collider.CompareTag("Tile"))
         {
             return;
         }
-        Tile t = hit.collider.GetComponent<Tile>();
+        var t = hit.collider.GetComponent<Tile>();
         if (t.selectable)
         {
             // todo move target
