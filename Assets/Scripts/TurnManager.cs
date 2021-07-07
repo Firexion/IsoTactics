@@ -15,7 +15,7 @@ public class TurnManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (turnTeam.Count == 0)
         {
@@ -23,7 +23,7 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    static void InitTeamTurnQueue()
+    private static void InitTeamTurnQueue()
     {
         var teamList = units[turnKey.Peek()];
 
