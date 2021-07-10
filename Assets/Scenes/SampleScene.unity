@@ -158,6 +158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 4
   nextTurn: 50
+  moveController: {fileID: 4979310}
 --- !u!114 &4979310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2346,6 +2347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 2
   nextTurn: 40
+  moveController: {fileID: 237188109}
 --- !u!4 &247204292 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7460431636527198119, guid: 87bd992fd4f63ee47af76befbf806405, type: 3}
@@ -4002,6 +4004,7 @@ GameObject:
   m_Component:
   - component: {fileID: 416002593}
   - component: {fileID: 416002592}
+  - component: {fileID: 416002594}
   m_Layer: 5
   m_Name: UIDocument
   m_TagString: Untagged
@@ -4039,6 +4042,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &416002594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 416002591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 402d8eb3ae541d64e842184cb6628a05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &420647399
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20310,6 +20325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 1
   nextTurn: 30
+  moveController: {fileID: 682247668}
 --- !u!1001 &683269437
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22710,7 +22726,6 @@ MonoBehaviour:
   rotateSpeed: 0.01
   speed: 60
   damping: 6
-  slerp: 1
   mainCamera: {fileID: 963194227}
 --- !u!4 &972579853 stripped
 Transform:
@@ -23795,6 +23810,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 3
   nextTurn: 20
+  moveController: {fileID: 1048869154}
 --- !u!114 &1048869154
 MonoBehaviour:
   m_ObjectHideFlags: 0

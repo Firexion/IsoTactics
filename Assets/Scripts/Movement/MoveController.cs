@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Movement
 {
-    public class TacticsMove : MonoBehaviour
+    public abstract class MoveController : MonoBehaviour
     {
         private const int MoveStraightCost = 10;
         private const int MoveDiagonalCost = 14;
@@ -26,7 +26,8 @@ namespace Movement
         private readonly Stack<Tile> _path = new Stack<Tile>();
         private Tile _currentTile;
 
-        protected bool moving;
+        public bool moving;
+        public bool canMove = true;
         public int moveRange = 5;
         public float jumpHeight = 2;
         public float moveSpeed = 2;
@@ -154,11 +155,15 @@ namespace Movement
             }
             else
             {
-                RemoveSelectableTiles();
-                moving = false;
-                turnTaker.nextTurn += 100;
-                turnTaker.Turn = false;
+                FinishedMoving();
             }
+        }
+
+        public void FinishedMoving()
+        {
+            RemoveSelectableTiles();
+            moving = false;
+            canMove = false;
         }
 
         private void RemoveSelectableTiles()

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Movement
 {
-    public class NPCMove : TacticsMove
+    public class NPCMoveController : MoveController
     {
         private GameObject _target;
 
@@ -15,7 +15,7 @@ namespace Movement
         // Update is called once per frame
         private void Update()
         {
-            if (!turnTaker.Turn) return;
+            if (!turnTaker.turn || !canMove) return;
 
             if (!moving)
             {
@@ -27,6 +27,12 @@ namespace Movement
             else
             {
                 Move();
+            }
+
+            // NPC needs to end their turn once they are done moving
+            if (turnTaker.turn && !canMove)
+            {
+                turnTaker.EndTurn();
             }
         }
 

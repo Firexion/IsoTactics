@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Movement
 {
-    public class PlayerMove : TacticsMove
+    public class PlayerMoveController : MoveController
     {
         [SerializeField] private Camera cam;
         // Start is called before the first frame update
@@ -14,7 +14,7 @@ namespace Movement
         // Update is called once per frame
         private void Update()
         {
-            if (!turnTaker.Turn)  return;
+            if (!turnTaker.turn || !canMove)  return;
 
             if (!moving)
             {

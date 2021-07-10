@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Movement;
 using UnityEngine;
 
 namespace Turn
@@ -36,7 +36,7 @@ namespace Turn
                     SetActive(turnTakers.Peek());
                 }
             }
-            else if (!_activeTurnTaker.Turn)
+            else if (!_activeTurnTaker.turn) // unit just finished their turn
             {
                 // Move Unit to the next turn value and if there is anyone left at this turn count, they get a turn
                 AddTurnTaker(_activeTurnTaker);
@@ -77,6 +77,7 @@ namespace Turn
 
         private static void SetInactive()
         {
+            _activeTurnTaker.EndTurn();
             TurnOrder.Remove(_turnClock);
             _activeTurnTaker = null;
             _activeUnitIndex = -1;
@@ -87,7 +88,12 @@ namespace Turn
             _cameraController.Focus(turnTaker.transform);
             _activeTurnTaker = turnTaker;
             _activeUnitIndex = turnTaker.id;
-            turnTaker.TakeTurn();
+            turnTaker.StartTurn();
+        }
+
+        public static void EndCurrentTurn()
+        {
+            _activeTurnTaker.EndTurn();
         }
     }
 }
