@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -10,15 +11,14 @@ public class CameraController : MonoBehaviour
     public float speed;
     public float damping = 6.0f;
 
-    public bool slerp = true;
-
     [SerializeField] private Camera mainCamera;
 
     private Plane _plane;
     private Vector3 _center;
 
     private Vector3 _origPosition;
-    private bool _rotating = false;    
+    private bool _rotating = false;
+    private bool _moving = false;
 
     // Start is called before the first frame update
     private void Start()
@@ -41,6 +41,8 @@ public class CameraController : MonoBehaviour
     {
         if (_rotating) return;
         var newPos = new Vector3(_center.x + _origPosition.x, transform.position.y, _center.z + _origPosition.z);
+        _moving = math.abs(newPos.x - transform.position.x) > 0.01f || math.abs(newPos.z - transform.position.z) > 0.01f;
+        if (!_moving) return;
         transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * damping);
     }
 
@@ -54,7 +56,7 @@ public class CameraController : MonoBehaviour
 
     private void HandleRotation()
     {
-        if (Input.GetButtonDown("Rotate"))
+        if (!_moving && Input.GetButtonDown("Rotate"))
         {
             StartCoroutine(nameof(RotateObject));
         }
@@ -74,7 +76,8 @@ public class CameraController : MonoBehaviour
             transform.LookAt(_center);
             yield return new WaitForSeconds(rotateSpeed);
         }
-        _origPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+
+        _origPosition = new Vector3(transform.position.x - _center.x, transform.position.y, transform.position.z - _center.z);
         _rotating = false;
     }
 
