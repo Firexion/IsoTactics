@@ -1,8 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <ui:VisualElement style="width: 26%; height: 37%; left: 1%; top: 50%; right: auto; bottom: auto; color: rgb(56, 56, 56); background-color: rgb(56, 56, 56); align-items: center; justify-content: center; position: relative; flex-direction: column; max-width: 278px; max-height: 370px; min-width: auto;">
-        <ui:Button text="Move" display-tooltip-when-elided="true" name="menu-button" style="width: 156px; height: 51px; font-size: 45px;" />
-        <ui:Button text="Attack" display-tooltip-when-elided="true" name="menu-button" style="width: 156px; height: 51px; font-size: 45px;" />
-        <ui:Button text="Special" display-tooltip-when-elided="true" name="menu-button" style="width: 156px; height: 51px; font-size: 45px;" />
-        <ui:Button text="Wait" display-tooltip-when-elided="true" name="menu-button" style="width: 156px; height: 51px; font-size: 45px;" />
+        <ui:Button text="Move" display-tooltip-when-elided="true" name="move-button" style="width: 156px; height: 51px; font-size: 45px;" />
+        <ui:Button text="Attack" display-tooltip-when-elided="true" name="attack-button" style="width: 156px; height: 51px; font-size: 45px;" />
+        <ui:Button text="Special" display-tooltip-when-elided="true" name="special-button" style="width: 156px; height: 51px; font-size: 45px;" />
+        <ui:Button text="Wait" display-tooltip-when-elided="true" name="wait-button" style="width: 156px; height: 51px; font-size: 45px;" />
     </ui:VisualElement>
 </ui:UXML>

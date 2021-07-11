@@ -20,11 +20,10 @@ namespace Movement
             None
         };
 
-        private readonly List<Tile> _selectableTiles = new List<Tile>();
-        private Tile[] _tiles;
+        protected readonly List<Tile> selectableTiles = new List<Tile>();
 
         private readonly Stack<Tile> _path = new Stack<Tile>();
-        private Tile _currentTile;
+        protected Tile currentTile;
 
         public bool moving;
         public bool canMove = true;
@@ -46,14 +45,13 @@ namespace Movement
         protected void Init()
         {
             turnTaker = GetComponent<TurnTaker>();
-            _tiles = FindObjectsOfType<Tile>();
             _halfHeight = GetComponent<Collider>().bounds.extents.y;
         }
 
         private void GetCurrentTile()
         {
-            _currentTile = GetTargetTile(gameObject);
-            _currentTile.current = true;
+            currentTile = GetTargetTile(gameObject);
+            currentTile.current = true;
         }
 
         protected static Tile GetTargetTile(GameObject target)
@@ -70,7 +68,7 @@ namespace Movement
 
         private void ComputeAdjacencyLists(Tile target)
         {
-            foreach (var tile in _tiles)
+            foreach (var tile in Map.tiles)
             {
                 tile.FindNeighbors(jumpHeight, target);
             }
@@ -83,15 +81,15 @@ namespace Movement
 
             var process = new Queue<Tile>();
 
-            process.Enqueue(_currentTile);
-            _currentTile.visited = true;
+            process.Enqueue(currentTile);
+            currentTile.visited = true;
             //currentTile.parent = ??  leave as null 
 
             while (process.Count > 0)
             {
                 var t = process.Dequeue();
 
-                _selectableTiles.Add(t);
+                selectableTiles.Add(t);
                 t.selectable = true;
 
                 if (t.distance >= moveRange) continue;
@@ -103,6 +101,7 @@ namespace Movement
                     process.Enqueue(tile);
                 }
             }
+            currentTile.selectable = false;
         }
 
         protected void MoveToTile(Tile tile)
@@ -168,18 +167,18 @@ namespace Movement
 
         private void RemoveSelectableTiles()
         {
-            if (_currentTile != null)
+            if (currentTile != null)
             {
-                _currentTile.current = false;
-                _currentTile = null;
+                currentTile.current = false;
+                currentTile = null;
             }
 
-            foreach (var tile in _selectableTiles)
+            foreach (var tile in selectableTiles)
             {
                 tile.Reset();
             }
 
-            _selectableTiles.Clear();
+            selectableTiles.Clear();
         }
 
         private void CalculateHeading(Vector3 target)
@@ -328,9 +327,9 @@ namespace Movement
             var openList = new List<Tile>();
             var closedList = new List<Tile>();
 
-            openList.Add(_currentTile);
-            _currentTile.h = Vector3.Distance(_currentTile.transform.position, target.transform.position);
-            _currentTile.f = _currentTile.h;
+            openList.Add(currentTile);
+            currentTile.h = Vector3.Distance(currentTile.transform.position, target.transform.position);
+            currentTile.f = currentTile.h;
 
             while (openList.Count > 0)
             {

@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+
+using Movement;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -8,14 +8,14 @@ using UnityEngine;
 [RequireComponent(typeof(MeshCollider))]
 public class Map : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static Tile[] tiles;
+    private void Start()
     {
-        
+        tiles = FindObjectsOfType<Tile>();
     }
 
-    // Update is called once per frame
-    void Update()
+
+    private void Update()
     {
         
     }

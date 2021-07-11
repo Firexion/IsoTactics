@@ -5,6 +5,7 @@ namespace Movement
 {
     public class Tile : MonoBehaviour
     {
+        public bool currentlySelecting = false;
         public bool current = false;
         public bool target = false;
         public bool selectable = false;
@@ -34,7 +35,7 @@ namespace Movement
         // Update is called once per frame
         private void Update()
         {
-            if (current)
+            if (currentlySelecting)
             {
                 _selectableRenderer.enabled = true;
                 _selectableRenderer.material.color = Color.magenta;
@@ -63,6 +64,7 @@ namespace Movement
             selectable = false;
             walkable = true;
             visited = false;
+            currentlySelecting = false;
             parent = null;
             distance = 0;
             f = g = h = 0;
@@ -86,13 +88,11 @@ namespace Movement
             foreach (var item in colliders)
             {
                 var tile = item.GetComponent<Tile>();
-                if (tile != null && tile.walkable)
+                if (tile == null || !tile.walkable) continue;
+                RaycastHit hit;
+                if (!Physics.Raycast(tile.transform.position, Vector3.up, out hit, 1) || (tile == tileTarget))
                 {
-                    RaycastHit hit;
-                    if (!Physics.Raycast(tile.transform.position, Vector3.up, out hit, 1) || (tile == tileTarget))
-                    {
-                        adjacencyList.Add(tile);
-                    }
+                    adjacencyList.Add(tile);
                 }
             }
         }

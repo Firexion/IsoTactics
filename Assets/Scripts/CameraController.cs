@@ -1,8 +1,9 @@
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviour, PlayerActions.ICameraActions
 {
     public float zoomSpeed;
     public float panSpeed;
@@ -19,99 +20,72 @@ public class CameraController : MonoBehaviour
     private Vector3 _origPosition;
     private bool _rotating = false;
     private bool _moving = false;
+    private float _rotateAxis;
+
+    private PlayerActions _playerActions;
 
     // Start is called before the first frame update
     private void Start()
     {
+        _playerActions = new PlayerActions();
+        _playerActions.Camera.SetCallbacks(this);
+        _playerActions.Enable();
+        
         _center = new Vector3(0, 0, 0);
         _plane = new Plane(Vector3.up, Vector3.zero);
         transform.LookAt(_center);
         _origPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
     }
 
-    // Update is called once per frame
-    private void Update()
-    {
-        HandleZoom();
-        // HandlePan();
-        HandleRotation();
-    }
 
     private void SmoothMoveAndLookAt()
     {
         if (_rotating) return;
         var newPos = new Vector3(_center.x + _origPosition.x, transform.position.y, _center.z + _origPosition.z);
-        _moving = math.abs(newPos.x - transform.position.x) > 0.01f || math.abs(newPos.z - transform.position.z) > 0.01f;
+        _moving = math.abs(newPos.x - transform.position.x) > 0.01f ||
+                  math.abs(newPos.z - transform.position.z) > 0.01f;
         if (!_moving) return;
         transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * damping);
-    }
-
-    private void HandleZoom()
-    {
-        var scrollValue = Input.mouseScrollDelta.y;
-        if (scrollValue == 0.0) return;
-        var newSize = mainCamera.orthographicSize - scrollValue;
-        mainCamera.orthographicSize = Mathf.Clamp(newSize, 3.0f, 20.0f);
-    }
-
-    private void HandleRotation()
-    {
-        if (!_moving && Input.GetButtonDown("Rotate"))
-        {
-            StartCoroutine(nameof(RotateObject));
-        }
     }
 
     private IEnumerator RotateObject()
     {
         _rotating = true;
-        var dir = Input.GetAxis("Rotate");
         for (var i = 1; i <= 90; i++)
         {
             new WaitForSeconds(60f);
             var dToCenter = transform.position - _center;
-            var newRot = Quaternion.Euler(new Vector3(0, dir, 0));
+            var newRot = Quaternion.Euler(new Vector3(0, _rotateAxis, 0));
             var dDir = newRot * dToCenter;
             transform.position = _center + dDir;
             transform.LookAt(_center);
             yield return new WaitForSeconds(rotateSpeed);
         }
 
-        _origPosition = new Vector3(transform.position.x - _center.x, transform.position.y, transform.position.z - _center.z);
+        _origPosition = new Vector3(transform.position.x - _center.x, transform.position.y,
+            transform.position.z - _center.z);
         _rotating = false;
-    }
-
-    private IEnumerator Recenter()
-    {
-        yield return new WaitForSeconds(rotateSpeed);
-    }
-
-    private void HandlePan()
-    {
-        var dRight = transform.right.XZ();
-        var dUp = transform.up.XZ();
-        if (_center.x < panBuffer)
-        {
-            transform.position -= dRight * (Time.deltaTime * panSpeed);
-        }
-        else if (_center.x > Screen.width - panBuffer)
-        {
-            transform.position += dRight * (Time.deltaTime * panSpeed);
-        }
-
-        if (_center.y < panBuffer)
-        {
-            transform.position -= dUp * (Time.deltaTime * panSpeed);
-        }
-        else if (_center.y > Screen.height - panBuffer)
-        {
-            transform.position += dUp * (Time.deltaTime * panSpeed);
-        }
     }
 
     public void Focus(Transform focusTransform)
     {
         _center = focusTransform.position;
         SmoothMoveAndLookAt();
+    }
+
+    public void OnRotate(InputAction.CallbackContext context)
+    {
+        if (!context.started || _moving || _rotating) return;
+        _rotateAxis = context.ReadValue<float>();
+        StartCoroutine(nameof(RotateObject));
+    }
+
+    public void OnZoom(InputAction.CallbackContext context)
+    {
+        var scrollValue = context.ReadValue<Vector2>().y;
+        if (scrollValue == 0.0) return;
+        scrollValue = scrollValue > 0.0f ? +zoomSpeed : -zoomSpeed;
+        var newSize = mainCamera.orthographicSize - scrollValue;
+        mainCamera.orthographicSize = Mathf.Clamp(newSize, 3.0f, 20.0f);
     }
 }
