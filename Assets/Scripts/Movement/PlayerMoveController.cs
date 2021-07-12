@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,7 +25,9 @@ namespace Movement
         // Update is called once per frame
         private void Update()
         {
-            if (!turnTaker.turn || !canMove) return;
+            if (!turnTaker.turn) return;
+            UIController.ShowMenu();
+            if (!canMove) return;
 
             if (moving)
             {

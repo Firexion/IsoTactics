@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Movement;
 using UnityEngine;
 
 namespace Turn
@@ -13,8 +12,6 @@ namespace Turn
         private static TurnTaker _activeTurnTaker;
 
         private static CameraController _cameraController;
-
-        // Start is called before the first frame update
         private void Start()
         {
             _cameraController = FindObjectOfType<CameraController>();

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 
 namespace Movement
 {
@@ -38,17 +39,17 @@ namespace Movement
             if (currentlySelecting)
             {
                 _selectableRenderer.enabled = true;
-                _selectableRenderer.material.color = Color.magenta;
+                _selectableRenderer.material.color = Colors.orange;
             }
             else if (target)
             {
                 _selectableRenderer.enabled = true;
-                _selectableRenderer.material.color = Color.green;
+                _selectableRenderer.material.color = Colors.red;
             }
             else if (selectable)
             {
                 _selectableRenderer.enabled = true;
-                _selectableRenderer.material.color = Color.blue;
+                _selectableRenderer.material.color = Colors.darkBlue;
             }
             else
             {

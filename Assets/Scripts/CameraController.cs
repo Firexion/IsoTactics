@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -42,8 +41,8 @@ public class CameraController : MonoBehaviour, PlayerActions.ICameraActions
     {
         if (_rotating) return;
         var newPos = new Vector3(_center.x + _origPosition.x, transform.position.y, _center.z + _origPosition.z);
-        _moving = math.abs(newPos.x - transform.position.x) > 0.01f ||
-                  math.abs(newPos.z - transform.position.z) > 0.01f;
+        _moving = Mathf.Abs(newPos.x - transform.position.x) > 0.01f ||
+                  Mathf.Abs(newPos.z - transform.position.z) > 0.01f;
         if (!_moving) return;
         transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * damping);
     }
