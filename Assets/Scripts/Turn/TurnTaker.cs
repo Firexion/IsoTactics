@@ -13,8 +13,7 @@ namespace Turn
         public void StartTurn()
         {
             turn = true;
-            moveController.canMove = true;
-            moveController.moving = false;
+            moveController.StartTurn();
         }
 
         public void EndTurn()

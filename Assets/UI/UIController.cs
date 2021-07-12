@@ -6,12 +6,13 @@ using UnityEngine.UIElements;
 
 public class UIController : MonoBehaviour, PlayerActions.IUIActions
 {
-    private Button _moveButton;
-    private Button _attackButton;
-    private Button _specialButton;
-    private Button _waitButton;
+    private static Button _moveButton;
+    private static Button _attackButton;
+    private static Button _specialButton;
+    private static Button _waitButton;
 
     private readonly List<Button> _buttons = new List<Button>();
+    private static readonly List<string> _disabledButtons = new List<string>();
     private int _selectedIndex = -1;
     private PlayerActions _playerActions;
 
@@ -44,10 +45,15 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
 
     private static void MoveButtonPressed()
     {
+        if (_disabledButtons.Contains("move-button")) return;
+        _menu.visible = false;
+        TurnManager.FindMoveTiles();
     }
 
     private static void AttackButtonPressed()
     {
+        _menu.visible = false;
+        TurnManager.FindAttackTiles();
     }
 
     private static void SpecialButtonPressed()
@@ -112,6 +118,12 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
         if (_selectedIndex == -1)
         {
             var button = _buttons[0];
+            if (_disabledButtons.Contains(button.name))
+            {
+                FocusAgain(true);
+                return;
+            }
+
             button.AddToClassList("button-focus");
             button.RemoveFromClassList("button");
             _selectedIndex = 0;
@@ -124,8 +136,28 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
 
             _selectedIndex = _selectedIndex == _buttons.Count - 1 ? 0 : _selectedIndex + 1;
             button = _buttons[_selectedIndex];
+            if (_disabledButtons.Contains(button.name))
+            {
+                FocusAgain(true);
+                return;
+            }
+
             button.AddToClassList("button-focus");
             button.RemoveFromClassList("button");
+        }
+    }
+
+    private void FocusAgain(bool forward)
+    {
+        if (forward)
+        {
+            _selectedIndex = _selectedIndex == 0 ? _selectedIndex : _selectedIndex + 1;
+            FocusNextButton();
+        }
+        else
+        {
+            _selectedIndex = _selectedIndex == _buttons.Count - 1 ? _selectedIndex : _selectedIndex - 1;
+            FocusPreviousButton();
         }
     }
 
@@ -135,6 +167,11 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
         {
             _selectedIndex = _buttons.Count - 1;
             var button = _buttons[_selectedIndex];
+            if (_disabledButtons.Contains(button.name))
+            {
+                FocusAgain(false);
+                return;
+            }
             button.AddToClassList("button-focus");
             button.RemoveFromClassList("button");
         }
@@ -146,6 +183,11 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
 
             _selectedIndex = _selectedIndex == 0 ? _buttons.Count - 1 : _selectedIndex - 1;
             button = _buttons[_selectedIndex];
+            if (_disabledButtons.Contains(button.name))
+            {
+                FocusAgain(false);
+                return;
+            }
             button.AddToClassList("button-focus");
             button.RemoveFromClassList("button");
         }
@@ -154,5 +196,12 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
     public static void ShowMenu()
     {
         _menu.visible = true;
+    }
+
+    public static void DisableMove()
+    {
+        _disabledButtons.Add("move-button");
+        _moveButton.AddToClassList("button-disabled");
+        _moveButton.RemoveFromClassList("button");
     }
 }

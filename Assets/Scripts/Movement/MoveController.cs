@@ -48,7 +48,13 @@ namespace Movement
             _halfHeight = GetComponent<Collider>().bounds.extents.y;
         }
 
-        private void GetCurrentTile()
+        public virtual void StartTurn()
+        {
+            canMove = true;
+            moving = false;
+        }
+
+        protected void GetCurrentTile()
         {
             currentTile = GetTargetTile(gameObject);
             currentTile.current = true;
@@ -74,7 +80,7 @@ namespace Movement
             }
         }
 
-        protected void FindSelectableTiles()
+        public virtual void FindSelectableTiles()
         {
             ComputeAdjacencyLists(null);
             GetCurrentTile();
@@ -101,6 +107,7 @@ namespace Movement
                     process.Enqueue(tile);
                 }
             }
+
             currentTile.selectable = false;
         }
 
@@ -158,7 +165,7 @@ namespace Movement
             }
         }
 
-        public void FinishedMoving()
+        public virtual void FinishedMoving()
         {
             RemoveSelectableTiles();
             moving = false;
@@ -170,7 +177,7 @@ namespace Movement
             if (currentTile != null)
             {
                 currentTile.current = false;
-                currentTile = null;
+                GetCurrentTile();
             }
 
             foreach (var tile in selectableTiles)

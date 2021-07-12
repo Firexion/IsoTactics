@@ -26,26 +26,42 @@ namespace Movement
         private void Update()
         {
             if (!turnTaker.turn) return;
-            UIController.ShowMenu();
             if (!canMove) return;
-
             if (moving)
             {
                 Move();
             }
-            else if (selectableTiles.Count == 0)
-            {
-                FindSelectableTiles();
-                if (_currentlySelectedTile != null) return;
-                _currentlySelectedTile = currentTile;
-                _currentlySelectedTile.currentlySelecting = true;
-            }
-            
         }
 
         private void FixedUpdate()
         {
             MoveSelection();
+        }
+        
+        public override void StartTurn()
+        {
+            base.StartTurn();
+            UIController.ShowMenu();
+            GetCurrentTile();
+            _currentlySelectedTile = currentTile;
+            _currentlySelectedTile.currentlySelecting = true;
+        }
+
+        public override void FinishedMoving()
+        {
+            base.FinishedMoving();
+            UIController.ShowMenu();
+            UIController.DisableMove();
+            GetCurrentTile();
+            _currentlySelectedTile = currentTile;
+            _currentlySelectedTile.currentlySelecting = true;
+        }
+
+        public override void FindSelectableTiles()
+        {
+            base.FindSelectableTiles();
+            _currentlySelectedTile = currentTile;
+            _currentlySelectedTile.currentlySelecting = true;
         }
 
 
@@ -53,9 +69,13 @@ namespace Movement
         {
             if (!turnTaker.turn || !context.started) return;
             if (_currentlySelectedTile.current || !_currentlySelectedTile.selectable) return;
-            MoveToTile(_currentlySelectedTile);
+            StartMove(_currentlySelectedTile);
         }
 
+        /**
+         * This moves the Selection reticule one tile on a single press
+         * If the button is held down it moves more tiles after a small delay
+         */
         private void MoveSelection()
         {
             if (!turnTaker.turn) return;
@@ -119,9 +139,16 @@ namespace Movement
 
             var t = hit.collider.GetComponent<Tile>();
             if (!t.selectable) return;
-            MoveToTile(t);
-            _currentlySelectedTile = t;
-            _currentlySelectedTile.currentlySelecting = true;
+            StartMove(t);
+        }
+
+        private void StartMove(Tile tile)
+        {
+            _currentlySelectedTile.currentlySelecting = false;
+            tile.currentlySelecting = false;
+            tile.target = true;
+            
+            MoveToTile(tile);
         }
     }
 }

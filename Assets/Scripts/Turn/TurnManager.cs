@@ -92,5 +92,15 @@ namespace Turn
         {
             _activeTurnTaker.EndTurn();
         }
+
+        public static void FindMoveTiles()
+        {
+            _activeTurnTaker.moveController.FindSelectableTiles();
+        }
+
+        public static void FindAttackTiles()
+        {
+            // TODO
+        }
     }
 }
