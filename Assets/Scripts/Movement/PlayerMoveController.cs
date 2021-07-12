@@ -1,24 +1,21 @@
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Movement
 {
-    public class PlayerMoveController : MoveController, PlayerActions.ITileActions
+    public class PlayerMoveController : MoveController
     {
         [SerializeField] private Camera cam;
         [SerializeField] private bool invertControls = true;
         [SerializeField] private float tileMoveFrequency = 0.15f;
         [SerializeField] private float initialTileMoveDelay = 0.3f;
-        private PlayerActions _playerActions;
 
         private Tile _currentlySelectedTile;
         private float _startTileMoveTime;
 
         private void Start()
         {
-            _playerActions = new PlayerActions();
-            _playerActions.Tile.SetCallbacks(this);
-            _playerActions.Enable();
             Init();
         }
 
@@ -47,6 +44,14 @@ namespace Movement
             _currentlySelectedTile.currentlySelecting = true;
         }
 
+        public override void EndTurn()
+        {
+            base.EndTurn();
+            if (_currentlySelectedTile == null) return;
+            _currentlySelectedTile.currentlySelecting = false;
+            _currentlySelectedTile = null;
+        }
+
         public override void FinishedMoving()
         {
             base.FinishedMoving();
@@ -65,7 +70,7 @@ namespace Movement
         }
 
 
-        public void OnSelect(InputAction.CallbackContext context)
+        public override void OnSelect(InputAction.CallbackContext context)
         {
             if (!turnTaker.turn || !context.started) return;
             if (_currentlySelectedTile.current || !_currentlySelectedTile.selectable) return;
@@ -81,7 +86,7 @@ namespace Movement
             if (!turnTaker.turn) return;
             if (Time.fixedTime - _startTileMoveTime < tileMoveFrequency) return;
             _startTileMoveTime = Time.fixedTime;
-            var inputMovement = _playerActions.Tile.Move.ReadValue<Vector2>();
+            var inputMovement = InputController.playerActions.Tile.Move.ReadValue<Vector2>();
             if (inputMovement == Vector2.zero) return;
             
             var direction = new Vector3(inputMovement.x, 0, inputMovement.y);
@@ -104,7 +109,7 @@ namespace Movement
             }
         }
 
-        public void OnMove(InputAction.CallbackContext context)
+        public override void OnMove(InputAction.CallbackContext context)
         {
             _startTileMoveTime = Time.fixedTime + initialTileMoveDelay;
             if (!turnTaker.turn || !context.performed) return;
@@ -130,7 +135,7 @@ namespace Movement
             }
         }
 
-        public void OnClick(InputAction.CallbackContext context)
+        public override void OnClick(InputAction.CallbackContext context)
         {
             if (!turnTaker.turn || !context.ReadValueAsButton()) return; // Only want mouse-down
             var ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());

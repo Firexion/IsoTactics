@@ -1,22 +1,33 @@
+using System;
 using System.Collections.Generic;
+using DefaultNamespace;
 using Turn;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using Utils;
 
-public class UIController : MonoBehaviour, PlayerActions.IUIActions
+public class UIController : MonoBehaviour
 {
     private static Button _moveButton;
     private static Button _attackButton;
     private static Button _specialButton;
     private static Button _waitButton;
 
-    private readonly List<Button> _buttons = new List<Button>();
-    private static readonly List<string> _disabledButtons = new List<string>();
-    private int _selectedIndex = -1;
-    private PlayerActions _playerActions;
+    private static readonly Dictionary<ButtonEnum, Button> Buttons = new Dictionary<ButtonEnum, Button>();
+    private static readonly List<ButtonEnum> DisabledButtons = new List<ButtonEnum>();
+
+    private static ButtonEnum _current = ButtonEnum.None;
 
     private static VisualElement _menu;
+
+    private enum ButtonEnum
+    {
+        None = 0,
+        Move = 1,
+        Attack = 2,
+        Special = 3,
+        Wait = 4
+    }
 
     private void Start()
     {
@@ -31,28 +42,26 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
         _specialButton.clicked += SpecialButtonPressed;
         _waitButton.clicked += WaitButtonPressed;
 
-        _buttons.Add(_moveButton);
-        _buttons.Add(_attackButton);
-        _buttons.Add(_specialButton);
-        _buttons.Add(_waitButton);
-
-        _playerActions = new PlayerActions();
-        _playerActions.UI.SetCallbacks(this);
-        _playerActions.Enable();
+        Buttons.Add(ButtonEnum.Move, _moveButton);
+        Buttons.Add(ButtonEnum.Attack, _attackButton);
+        Buttons.Add(ButtonEnum.Special, _specialButton);
+        Buttons.Add(ButtonEnum.Wait, _waitButton);
 
         _menu = root.Q<VisualElement>("menu");
     }
 
     private static void MoveButtonPressed()
     {
-        if (_disabledButtons.Contains("move-button")) return;
+        if (DisabledButtons.Contains(ButtonEnum.Move)) return;
         _menu.visible = false;
-        TurnManager.FindMoveTiles();
+        InputController.MenuClosed();
+        TurnManager.FindSelectableTiles();
     }
 
     private static void AttackButtonPressed()
     {
         _menu.visible = false;
+        InputController.MenuClosed();
         TurnManager.FindAttackTiles();
     }
 
@@ -66,142 +75,102 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
         TurnManager.EndCurrentTurn();
     }
 
-    public void OnNavigate(InputAction.CallbackContext context)
+    public static void FocusNextButton(bool forward)
     {
-    }
-
-    public void OnSubmit(InputAction.CallbackContext context)
-    {
-    }
-
-    public void OnCancel(InputAction.CallbackContext context)
-    {
-    }
-
-    public void OnTab(InputAction.CallbackContext context)
-    {
-        if (!context.started) return;
-        if (context.ReadValueAsButton())
+        if (_current == ButtonEnum.None)
         {
-            FocusNextButton();
+            _current = forward ? _current.Next() : _current.Previous();
         }
         else
         {
-            FocusPreviousButton();
-        }
-    }
-
-    public void OnPoint(InputAction.CallbackContext context)
-    {
-    }
-
-    public void OnClick(InputAction.CallbackContext context)
-    {
-        var mousePosition = Mouse.current.position.ReadValue();
-        Debug.Log("Clicked at " + mousePosition.x + ", " + mousePosition.y);
-    }
-
-    public void OnScrollWheel(InputAction.CallbackContext context)
-    {
-    }
-
-    public void OnMiddleClick(InputAction.CallbackContext context)
-    {
-    }
-
-    public void OnRightClick(InputAction.CallbackContext context)
-    {
-    }
-
-    private void FocusNextButton()
-    {
-        if (_selectedIndex == -1)
-        {
-            var button = _buttons[0];
-            if (_disabledButtons.Contains(button.name))
+            RemoveFocus();
+            _current = forward ? _current.Next() : _current.Previous();
+            if (_current == ButtonEnum.None)
             {
-                FocusAgain(true);
-                return;
+                _current = forward ? _current.Next() : _current.Previous();
             }
-
-            button.AddToClassList("button-focus");
-            button.RemoveFromClassList("button");
-            _selectedIndex = 0;
         }
-        else
+
+        if (DisabledButtons.Contains(_current))
         {
-            var button = _buttons[_selectedIndex];
-            button.AddToClassList("button");
-            button.RemoveFromClassList("button-focus");
-
-            _selectedIndex = _selectedIndex == _buttons.Count - 1 ? 0 : _selectedIndex + 1;
-            button = _buttons[_selectedIndex];
-            if (_disabledButtons.Contains(button.name))
-            {
-                FocusAgain(true);
-                return;
-            }
-
-            button.AddToClassList("button-focus");
-            button.RemoveFromClassList("button");
+            FocusNextButton(forward);
+            return;
         }
+
+        AddFocus();
     }
 
-    private void FocusAgain(bool forward)
+    private static void RemoveFocus()
     {
-        if (forward)
-        {
-            _selectedIndex = _selectedIndex == 0 ? _selectedIndex : _selectedIndex + 1;
-            FocusNextButton();
-        }
-        else
-        {
-            _selectedIndex = _selectedIndex == _buttons.Count - 1 ? _selectedIndex : _selectedIndex - 1;
-            FocusPreviousButton();
-        }
+        var button = Buttons[_current];
+        button.AddToClassList("button");
+        button.RemoveFromClassList("button-focus");
     }
 
-    private void FocusPreviousButton()
+    private static void AddFocus()
     {
-        if (_selectedIndex == -1)
-        {
-            _selectedIndex = _buttons.Count - 1;
-            var button = _buttons[_selectedIndex];
-            if (_disabledButtons.Contains(button.name))
-            {
-                FocusAgain(false);
-                return;
-            }
-            button.AddToClassList("button-focus");
-            button.RemoveFromClassList("button");
-        }
-        else
-        {
-            var button = _buttons[_selectedIndex];
-            button.AddToClassList("button");
-            button.RemoveFromClassList("button-focus");
-
-            _selectedIndex = _selectedIndex == 0 ? _buttons.Count - 1 : _selectedIndex - 1;
-            button = _buttons[_selectedIndex];
-            if (_disabledButtons.Contains(button.name))
-            {
-                FocusAgain(false);
-                return;
-            }
-            button.AddToClassList("button-focus");
-            button.RemoveFromClassList("button");
-        }
+        var button = Buttons[_current];
+        button.AddToClassList("button-focus");
+        button.RemoveFromClassList("button");
     }
+
 
     public static void ShowMenu()
     {
+        InputController.MenuOpened();
         _menu.visible = true;
+        FocusNextButton(true);
     }
 
     public static void DisableMove()
     {
-        _disabledButtons.Add("move-button");
+        DisabledButtons.Add(ButtonEnum.Move);
         _moveButton.AddToClassList("button-disabled");
         _moveButton.RemoveFromClassList("button");
+    }
+
+    public static void Submit()
+    {
+        if (DisabledButtons.Contains(_current)) return;
+        switch (_current)
+        {
+            case ButtonEnum.Move:
+            {
+                MoveButtonPressed();
+                break;
+            }
+            case ButtonEnum.Attack:
+            {
+                AttackButtonPressed();
+                break;
+            }
+            case ButtonEnum.Special:
+            {
+                SpecialButtonPressed();
+                break;
+            }
+            case ButtonEnum.Wait:
+            {
+                WaitButtonPressed();
+                break;
+            }
+            case ButtonEnum.None:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    public static void ResetMenu()
+    {
+        foreach (var button in Buttons)
+        {
+            button.Value.RemoveFromClassList("button-disabled");
+            button.Value.RemoveFromClassList("button-focus");
+            button.Value.AddToClassList("button");
+        }
+
+        DisabledButtons.Clear();
+        _current = ButtonEnum.None;
     }
 }

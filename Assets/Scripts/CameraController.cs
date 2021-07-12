@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CameraController : MonoBehaviour, PlayerActions.ICameraActions
+public class CameraController : MonoBehaviour
 {
     public float zoomSpeed;
     public float panSpeed;
@@ -21,15 +21,9 @@ public class CameraController : MonoBehaviour, PlayerActions.ICameraActions
     private bool _moving = false;
     private float _rotateAxis;
 
-    private PlayerActions _playerActions;
-
     // Start is called before the first frame update
     private void Start()
     {
-        _playerActions = new PlayerActions();
-        _playerActions.Camera.SetCallbacks(this);
-        _playerActions.Enable();
-        
         _center = new Vector3(0, 0, 0);
         _plane = new Plane(Vector3.up, Vector3.zero);
         transform.LookAt(_center);
@@ -72,14 +66,14 @@ public class CameraController : MonoBehaviour, PlayerActions.ICameraActions
         SmoothMoveAndLookAt();
     }
 
-    public void OnRotate(InputAction.CallbackContext context)
+    public void Rotate(InputAction.CallbackContext context)
     {
         if (!context.started || _moving || _rotating) return;
         _rotateAxis = context.ReadValue<float>();
         StartCoroutine(nameof(RotateObject));
     }
 
-    public void OnZoom(InputAction.CallbackContext context)
+    public void Zoom(InputAction.CallbackContext context)
     {
         var scrollValue = context.ReadValue<Vector2>().y;
         if (scrollValue == 0.0) return;

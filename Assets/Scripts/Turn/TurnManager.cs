@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Turn
 {
@@ -91,9 +93,10 @@ namespace Turn
         public static void EndCurrentTurn()
         {
             _activeTurnTaker.EndTurn();
+            InputController.ResetMenu();
         }
 
-        public static void FindMoveTiles()
+        public static void FindSelectableTiles()
         {
             _activeTurnTaker.moveController.FindSelectableTiles();
         }
@@ -101,6 +104,21 @@ namespace Turn
         public static void FindAttackTiles()
         {
             // TODO
+        }
+
+        public static void TileClicked(InputAction.CallbackContext context)
+        {
+            _activeTurnTaker.moveController.OnClick(context);
+        }
+
+        public static void TileSelected(InputAction.CallbackContext context)
+        {
+            _activeTurnTaker.moveController.OnSelect(context);
+        }
+
+        public static void TileMoved(InputAction.CallbackContext context)
+        {
+            _activeTurnTaker.moveController.OnMove(context);
         }
     }
 }

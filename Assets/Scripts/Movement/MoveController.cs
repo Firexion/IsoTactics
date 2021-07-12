@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Turn;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Movement
 {
@@ -51,6 +52,12 @@ namespace Movement
         public virtual void StartTurn()
         {
             canMove = true;
+            moving = false;
+        }
+
+        public virtual void EndTurn()
+        {
+            canMove = false;
             moving = false;
         }
 
@@ -170,6 +177,16 @@ namespace Movement
             RemoveSelectableTiles();
             moving = false;
             canMove = false;
+        }
+
+        public virtual void OnMove(InputAction.CallbackContext context)
+        {
+        }
+        public virtual void OnSelect(InputAction.CallbackContext context)
+        {
+        }
+        public virtual void OnClick(InputAction.CallbackContext context)
+        {
         }
 
         private void RemoveSelectableTiles()

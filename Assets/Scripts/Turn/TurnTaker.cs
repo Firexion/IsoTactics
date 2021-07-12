@@ -20,7 +20,7 @@ namespace Turn
         {
             turn = false;
             nextTurn += 100;
-            moveController.FinishedMoving();
+            moveController.EndTurn();
         }
     }
 }
