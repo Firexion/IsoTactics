@@ -1,6 +1,9 @@
 ﻿
+using System;
+
 namespace Unit
 {
+    [Serializable]
     public abstract class CombatUnit
     {
         public int id;
