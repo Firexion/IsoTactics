@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using DefaultNamespace;
 using UnityEngine;
@@ -9,7 +8,10 @@ public class CameraController : MonoBehaviour
     public float zoomSpeed;
     public float panSpeed;
     public float panBuffer = 50.0f;
+    
+    [Range (0f, 100f)]
     public float rotateSpeed;
+    
     public float speed;
     public float damping = 6.0f;
 
@@ -65,7 +67,8 @@ public class CameraController : MonoBehaviour
             var dDir = newRot * dToCenter;
             transform.position = _center + dDir;
             transform.LookAt(_center);
-            yield return new WaitForSeconds(rotateSpeed);
+            var waitTime = (100 - rotateSpeed) * 0.0001f;
+            yield return new WaitForSeconds(waitTime);
         }
 
         _origPosition = new Vector3(transform.position.x - _center.x, transform.position.y,
