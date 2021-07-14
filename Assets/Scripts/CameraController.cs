@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,7 +15,6 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] private Camera mainCamera;
 
-    private Plane _plane;
     private Vector3 _center;
 
     private Vector3 _origPosition;
@@ -25,9 +26,21 @@ public class CameraController : MonoBehaviour
     private void Start()
     {
         _center = new Vector3(0, 0, 0);
-        _plane = new Plane(Vector3.up, Vector3.zero);
         transform.LookAt(_center);
         _origPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+    }
+
+    private void FixedUpdate()
+    {
+        CheckRotate();
+    }
+
+    private void CheckRotate()
+    {
+        if (_rotating) return;
+        _rotateAxis = InputController.playerActions.Camera.Rotate.ReadValue<float>();
+        if (_rotateAxis == 0f) return;
+        StartCoroutine(nameof(RotateCoroutine));
     }
 
 
@@ -41,7 +54,7 @@ public class CameraController : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * damping);
     }
 
-    private IEnumerator RotateObject()
+    private IEnumerator RotateCoroutine()
     {
         _rotating = true;
         for (var i = 1; i <= 90; i++)
@@ -68,9 +81,9 @@ public class CameraController : MonoBehaviour
 
     public void Rotate(InputAction.CallbackContext context)
     {
-        if (!context.started || _moving || _rotating) return;
+        if (_moving || _rotating) return;
         _rotateAxis = context.ReadValue<float>();
-        StartCoroutine(nameof(RotateObject));
+        StartCoroutine(nameof(RotateCoroutine));
     }
 
     public void Zoom(InputAction.CallbackContext context)

@@ -20,7 +20,6 @@ namespace DefaultNamespace
         // Camera
         public void OnRotate(InputAction.CallbackContext context)
         {
-            if (!context.started) return;
             cameraController.Rotate(context);
         }
 
