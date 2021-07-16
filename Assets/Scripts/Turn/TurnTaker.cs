@@ -1,3 +1,4 @@
+using System;
 using Events;
 using Movement;
 using UnityEngine;
@@ -32,6 +33,11 @@ namespace Turn
         {
             runtimeSet.Add(this);
             MoveController = gameObject.GetComponent<MoveController>();
+        }
+
+        private void Awake()
+        {
+            runtimeSet.Add(this);
         }
 
         private void OnDisable()

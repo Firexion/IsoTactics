@@ -9,7 +9,6 @@ namespace Unit
     {
         public int id;
         public string Name { get; set; }
-        public bool IsRightHanded { get; set; }
 
         public int Brawn { get; set; }
         public int Agility { get; set; }
@@ -22,7 +21,6 @@ namespace Unit
         public int id;
         public int speedRating;
         public string name;
-        public bool isRightHanded;
 
         public int Brawn;
         public int Agility;
@@ -45,7 +43,6 @@ namespace Unit
         {
             this.id = data.id;
             this.name = data.Name;
-            this.isRightHanded = data.IsRightHanded;
             this.Brawn = data.Brawn;
             this.Agility = data.Agility;
             this.Perception = data.Perception;

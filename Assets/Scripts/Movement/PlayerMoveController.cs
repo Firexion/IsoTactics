@@ -131,7 +131,7 @@ namespace Movement
 
         public void OnClick(InputAction.CallbackContext context)
         {
-     //       if (!IsActive() || !context.ReadValueAsButton()) return; // Only want mouse-down
+           if (!IsActive() || !context.ReadValueAsButton()) return; // Only want mouse-down
             var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (!Physics.Raycast(ray, out var hit) || !hit.collider.CompareTag("Tile")) return;
