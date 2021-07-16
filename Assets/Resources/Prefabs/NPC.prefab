@@ -112,6 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTurnTaker: {fileID: 11400000, guid: 5b631ee7b5e20b644837523666ceeca7, type: 2}
+  tiles: {fileID: 11400000, guid: 58776fa7fb2dc6744848557953f9d81a, type: 2}
   moving: 0
   canMove: 1
   moveRange: 5

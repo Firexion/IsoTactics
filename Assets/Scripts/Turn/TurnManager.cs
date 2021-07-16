@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,15 @@ namespace Turn
         
         private void Awake()
         {
-            foreach (var turnTaker in RuntimeSet.Items) AddTurnTaker(turnTaker);
+            foreach (var turnTaker in RuntimeSet.Items)
+            {
+                Debug.Log("Adding " + turnTaker.id);
+                AddTurnTaker(turnTaker);
+            }
+        }
+
+        private void Start()
+        {
             GetNextTurn();
         }
 

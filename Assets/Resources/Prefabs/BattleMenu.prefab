@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6091564602908259466}
   - component: {fileID: 3810096971731097788}
   - component: {fileID: 4015641418543206492}
+  - component: {fileID: 8074957768375661747}
   m_Layer: 5
   m_Name: BattleMenu
   m_TagString: Untagged
@@ -64,6 +65,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTurnTaker: {fileID: 11400000, guid: 5b631ee7b5e20b644837523666ceeca7, type: 2}
   playerActions: {fileID: 11400000, guid: 912995f6b0f1dd746b6551645d5eee29, type: 2}
+  menuClosedEvent: {fileID: 11400000, guid: c64b9ed2c830a654a9217bc895e69cf8, type: 2}
+  menuOpenedEvent: {fileID: 11400000, guid: de2a826440d2f0e4d92a139b0964931c, type: 2}
 --- !u!114 &3810096971731097788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,6 +126,34 @@ MonoBehaviour:
       - m_Target: {fileID: 6091564602908259466}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
         m_MethodName: ResetMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8074957768375661747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6091564602908259511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaf4482cc3eb4b1492f5f16a7c81053f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 057a928b01a10654dac3bc9ae40739af, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6091564602908259466}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ShowMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

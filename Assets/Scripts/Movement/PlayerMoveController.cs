@@ -13,7 +13,7 @@ namespace Movement
         [SerializeField] private float tileMoveFrequency = 0.15f;
         [SerializeField] private float initialTileMoveDelay = 0.3f;
 
-        private Tile _currentlySelectedTile;
+        public TileVariable currentlySelectedTile;
         private float _startTileMoveTime;
 
         public PlayerActionsVariable playerActions;
@@ -37,8 +37,7 @@ namespace Movement
         {
             base.StartTurn();
             GetCurrentTile();
-            _currentlySelectedTile = currentTile;
-            _currentlySelectedTile.currentlySelecting = true;
+            currentlySelectedTile.SetValue(currentTile);
         }
 
         public override void EndTurn()
@@ -46,9 +45,8 @@ namespace Movement
             base.EndTurn();
             playerActions.Value.Tile.SetCallbacks(null);
             playerActions.Value.Tile.Disable();
-            if (_currentlySelectedTile == null) return;
-            _currentlySelectedTile.currentlySelecting = false;
-            _currentlySelectedTile = null;
+            if (currentlySelectedTile.Value == null) return;
+            currentlySelectedTile.Remove();
         }
 
         protected override void FinishedMoving()
@@ -56,8 +54,7 @@ namespace Movement
             base.FinishedMoving();
             finishedMoving.Raise();
             GetCurrentTile();
-            _currentlySelectedTile = currentTile;
-            _currentlySelectedTile.currentlySelecting = true;
+            currentlySelectedTile.SetValue(currentTile);
         }
 
         public override void FindSelectableTiles()
@@ -65,16 +62,15 @@ namespace Movement
             playerActions.Value.Tile.SetCallbacks(this);
             playerActions.Value.Tile.Enable();
             base.FindSelectableTiles();
-            _currentlySelectedTile = currentTile;
-            _currentlySelectedTile.currentlySelecting = true;
+            currentlySelectedTile.SetValue(currentTile);
         }
 
 
         public void OnSelect(InputAction.CallbackContext context)
         {
             if (!IsActive() || !context.started) return;
-            if (_currentlySelectedTile.current || !_currentlySelectedTile.selectable) return;
-            StartMove(_currentlySelectedTile);
+            if (currentlySelectedTile.Value.current || !currentlySelectedTile.Value.selectable) return;
+            StartMove(currentlySelectedTile.Value);
         }
 
         /**
@@ -83,7 +79,7 @@ namespace Movement
          */
         private void MoveSelection()
         {
-            if (!IsActive()) return;
+            //if (!IsActive()) return;
             if (Time.fixedTime - _startTileMoveTime < tileMoveFrequency) return;
             _startTileMoveTime = Time.fixedTime;
             var inputMovement = playerActions.Value.Tile.Move.ReadValue<Vector2>();
@@ -96,15 +92,14 @@ namespace Movement
             }
 
             var halfExtents = new Vector3(0.25f, (1 + 999) / 2.0f, 0.25f);
-            var colliders = Physics.OverlapBox(_currentlySelectedTile.transform.position + direction, halfExtents);
+            var colliders = Physics.OverlapBox(currentlySelectedTile.Value.transform.position + direction, halfExtents);
 
             foreach (var item in colliders)
             {
                 var tile = item.GetComponent<Tile>();
                 if (tile == null) continue;
-                _currentlySelectedTile.currentlySelecting = false;
-                _currentlySelectedTile = tile;
-                _currentlySelectedTile.currentlySelecting = true;
+                if (!tile.selectable && !tile.current) continue;
+                currentlySelectedTile.SetValue(tile);
                 break;
             }
         }
@@ -122,24 +117,21 @@ namespace Movement
             }
 
             var halfExtents = new Vector3(0.25f, (1 + 999) / 2.0f, 0.25f);
-            var colliders = Physics.OverlapBox(_currentlySelectedTile.transform.position + direction, halfExtents);
+            var colliders = Physics.OverlapBox(currentlySelectedTile.Value.transform.position + direction, halfExtents);
 
             foreach (var item in colliders)
             {
                 var tile = item.GetComponent<Tile>();
                 if (tile == null) continue;
-                _currentlySelectedTile.currentlySelecting = false;
-                _currentlySelectedTile = tile;
-                _currentlySelectedTile.currentlySelecting = true;
+                if (!tile.selectable && !tile.current) continue;
+                currentlySelectedTile.SetValue(tile);
                 break;
             }
         }
 
         public void OnClick(InputAction.CallbackContext context)
         {
-            var v = activeTurnTaker.Value != null ? activeTurnTaker.Value.id + "" : "null";
-            Debug.Log("Player " + turnTaker.id + " clicked " + v);
-            if (!IsActive() || !context.ReadValueAsButton()) return; // Only want mouse-down
+     //       if (!IsActive() || !context.ReadValueAsButton()) return; // Only want mouse-down
             var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (!Physics.Raycast(ray, out var hit) || !hit.collider.CompareTag("Tile")) return;
@@ -151,9 +143,8 @@ namespace Movement
 
         private void StartMove(Tile tile)
         {
-            _currentlySelectedTile.currentlySelecting = false;
-            tile.currentlySelecting = false;
             tile.target = true;
+            currentlySelectedTile.Remove();
 
             MoveToTile(tile);
         }

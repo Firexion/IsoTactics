@@ -16,6 +16,7 @@ namespace Turn
 
         public void StartTurn()
         {
+            Debug.Log("Starting turn for " + id);
             startTurn.Raise();
             MoveController.StartTurn();
         }

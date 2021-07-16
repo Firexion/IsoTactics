@@ -5,5 +5,6 @@ namespace Turn
 {
     [CreateAssetMenu]
     public class TurnTakerRuntimeSet : RuntimeSet<TurnTaker>
-    {}
+    {
+    }
 }

@@ -14,6 +14,7 @@ namespace Movement
         protected TurnTaker turnTaker;
         
         public TurnTakerVariable activeTurnTaker;
+        public TileRuntimeSet tiles;
 
         protected enum State
         {
@@ -83,7 +84,7 @@ namespace Movement
 
         private void ComputeAdjacencyLists(Tile target)
         {
-            foreach (var tile in Map.tiles)
+            foreach (var tile in tiles.Items)
             {
                 tile.FindNeighbors(jumpHeight, target);
             }

@@ -113,6 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTurnTaker: {fileID: 11400000, guid: 5b631ee7b5e20b644837523666ceeca7, type: 2}
+  tiles: {fileID: 11400000, guid: 58776fa7fb2dc6744848557953f9d81a, type: 2}
   moving: 0
   canMove: 1
   moveRange: 5
@@ -123,6 +124,7 @@ MonoBehaviour:
   invertControls: 1
   tileMoveFrequency: 0.15
   initialTileMoveDelay: 0.3
+  currentlySelectedTile: {fileID: 11400000, guid: c22cc8d9235997a4e949a856e5847616, type: 2}
   playerActions: {fileID: 11400000, guid: 912995f6b0f1dd746b6551645d5eee29, type: 2}
   finishedMoving: {fileID: 11400000, guid: c0529b92918099942ab6f1b9c4702273, type: 2}
 --- !u!114 &5405987082637384850

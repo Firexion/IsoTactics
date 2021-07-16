@@ -26,6 +26,18 @@ namespace Movement
 
         private Renderer _selectableRenderer;
 
+        public TileRuntimeSet tiles;
+        
+        private void OnEnable()
+        {
+            tiles.Add(this);
+        }
+
+        private void OnDisable()
+        {
+            tiles.Remove(this);
+        }
+
         // Start is called before the first frame update
         private void Start()
         {

@@ -28,6 +28,8 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
     public GameEvent menuClosedEvent;
     public GameEvent menuOpenedEvent;
 
+    private float _turnStartTime;
+
     private enum ButtonEnum
     {
         None = 0,
@@ -73,32 +75,34 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
 
     public void OnSubmit(InputAction.CallbackContext context)
     {
-        if (!context.started) return;
+        var clicked = context.ReadValueAsButton();
+        if (!clicked && !context.started) return;
         if (DisabledButtons.Contains(_current)) return;
+        if (Time.time - _turnStartTime < 0.001f) return; // Jank fix for a jank problem
         switch (_current)
         {
             case ButtonEnum.Move:
             {
                 MoveButtonPressed();
-                break;
+                return;
             }
             case ButtonEnum.Attack:
             {
                 AttackButtonPressed();
-                break;
+                return;
             }
             case ButtonEnum.Special:
             {
                 SpecialButtonPressed();
-                break;
+                return;
             }
             case ButtonEnum.Wait:
             {
                 WaitButtonPressed();
-                break;
+                return;
             }
             case ButtonEnum.None:
-                break;
+                return;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -152,6 +156,7 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
 
     private void WaitButtonPressed()
     {
+        ResetMenu();
         CloseMenu();
         activeTurnTaker.Value.EndTurn();
         
@@ -194,7 +199,6 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
 
     private static void AddFocus()
     {
-        Debug.Log(_current);
         var button = Buttons[_current];
         button.AddToClassList("button-focus");
         button.RemoveFromClassList("button");
@@ -204,8 +208,7 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
     public void ShowMenu()
     {
         if (!activeTurnTaker.IsPlayer()) return;
-        _menu ??= GetComponent<UIDocument>().rootVisualElement.Q<VisualElement>("menu");
-        
+        _turnStartTime = Time.time;
         _menu.visible = true;
         FocusNextButton(true);
         playerActions.Value.UI.Enable();

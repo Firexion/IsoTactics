@@ -46,7 +46,7 @@ public class CameraController : MonoBehaviour, PlayerActions.ICameraActions
 
     private void LateUpdate()
     {
-        if (activeTurnTaker.Value.transform.hasChanged)
+        if (activeTurnTaker.Value != null && activeTurnTaker.Value.transform.hasChanged)
         {
             Focus(activeTurnTaker.Value.transform);
         }
