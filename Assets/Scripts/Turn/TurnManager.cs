@@ -16,7 +16,6 @@ namespace Turn
         {
             foreach (var turnTaker in RuntimeSet.Items)
             {
-                Debug.Log("Adding " + turnTaker.id);
                 AddTurnTaker(turnTaker);
             }
         }

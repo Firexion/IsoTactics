@@ -143,6 +143,7 @@ namespace Movement
 
         private void StartMove(Tile tile)
         {
+            DisableInput();
             tile.target = true;
             currentlySelectedTile.Remove();
 
