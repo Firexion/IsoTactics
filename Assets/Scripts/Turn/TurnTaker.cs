@@ -5,10 +5,10 @@ namespace Turn
 {
     public class TurnTaker : MonoBehaviour
     {
-         public bool turn;
-        [SerializeField] public int id;
-        [SerializeField] public int nextTurn;
-        [SerializeField] public MoveController moveController;
+        public bool turn;
+        public int id;
+        public int nextTurn;
+        public MoveController moveController;
 
         public void StartTurn()
         {

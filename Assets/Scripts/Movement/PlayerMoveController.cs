@@ -6,7 +6,6 @@ namespace Movement
 {
     public class PlayerMoveController : MoveController
     {
-        [SerializeField] private Camera cam;
         [SerializeField] private bool invertControls = true;
         [SerializeField] private float tileMoveFrequency = 0.15f;
         [SerializeField] private float initialTileMoveDelay = 0.3f;
@@ -22,12 +21,8 @@ namespace Movement
         // Update is called once per frame
         private void Update()
         {
-            if (!turnTaker.turn) return;
-            if (!canMove) return;
-            if (moving)
-            {
-                Move();
-            }
+            if (!turnTaker.turn || !canMove) return;
+            if (moving) Move();
         }
 
         private void FixedUpdate()
@@ -138,7 +133,7 @@ namespace Movement
         public override void OnClick(InputAction.CallbackContext context)
         {
             if (!turnTaker.turn || !context.ReadValueAsButton()) return; // Only want mouse-down
-            var ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+            var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (!Physics.Raycast(ray, out var hit) || !hit.collider.CompareTag("Tile")) return;
 

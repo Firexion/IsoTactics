@@ -4,30 +4,16 @@ using UnityEngine.InputSystem;
 
 namespace DefaultNamespace
 {
-    public class InputController : MonoBehaviour, PlayerActions.ICameraActions, PlayerActions.ITileActions, PlayerActions.IUIActions
+    public class InputController : MonoBehaviour,  PlayerActions.ITileActions, PlayerActions.IUIActions
     {
         public static PlayerActions playerActions;
-        public CameraController cameraController;
         public void Start()
         {
             playerActions = new PlayerActions();
             playerActions.UI.SetCallbacks(this);
             playerActions.Tile.SetCallbacks(this);
-            playerActions.Camera.SetCallbacks(this);
             playerActions.Enable();
         }
-        
-        // Camera
-        public void OnRotate(InputAction.CallbackContext context)
-        {
-            cameraController.Rotate(context);
-        }
-
-        public void OnZoom(InputAction.CallbackContext context)
-        {
-            cameraController.Zoom(context);
-        }
-        
         
         // UI
 

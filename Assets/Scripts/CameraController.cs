@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviour, PlayerActions.ICameraActions
 {
     public float zoomSpeed;
     public float panSpeed;
@@ -15,7 +16,6 @@ public class CameraController : MonoBehaviour
     public float speed;
     public float damping = 6.0f;
 
-    [SerializeField] private Camera mainCamera;
 
     private Vector3 _center;
 
@@ -24,9 +24,17 @@ public class CameraController : MonoBehaviour
     private bool _moving = false;
     private float _rotateAxis;
 
+    private Camera _camera;
+
+    private void Awake()
+    {
+        _camera = GetComponent<Camera>();
+    }
+
     // Start is called before the first frame update
     private void Start()
     {
+        InputController.playerActions.Camera.SetCallbacks(this);
         _center = new Vector3(0, 0, 0);
         transform.LookAt(_center);
         _origPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
@@ -36,6 +44,7 @@ public class CameraController : MonoBehaviour
     {
         CheckRotate();
     }
+
 
     private void CheckRotate()
     {
@@ -82,19 +91,19 @@ public class CameraController : MonoBehaviour
         SmoothMoveAndLookAt();
     }
 
-    public void Rotate(InputAction.CallbackContext context)
+    public void OnRotate(InputAction.CallbackContext context)
     {
         if (_moving || _rotating) return;
         _rotateAxis = context.ReadValue<float>();
         StartCoroutine(nameof(RotateCoroutine));
     }
 
-    public void Zoom(InputAction.CallbackContext context)
+    public void OnZoom(InputAction.CallbackContext context)
     {
         var scrollValue = context.ReadValue<Vector2>().y;
         if (scrollValue == 0.0) return;
         scrollValue = scrollValue > 0.0f ? +zoomSpeed : -zoomSpeed;
-        var newSize = mainCamera.orthographicSize - scrollValue;
-        mainCamera.orthographicSize = Mathf.Clamp(newSize, 3.0f, 20.0f);
+        var newSize = _camera.orthographicSize - scrollValue;
+        _camera.orthographicSize = Mathf.Clamp(newSize, 3.0f, 20.0f);
     }
 }
