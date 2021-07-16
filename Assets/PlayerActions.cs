@@ -48,7 +48,7 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""negative"",
+                    ""name"": ""positive"",
                     ""id"": ""0bbeb42f-6d86-44bb-8023-89667a411b67"",
                     ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
@@ -59,7 +59,7 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""positive"",
+                    ""name"": ""negative"",
                     ""id"": ""2927a743-a9cc-4821-911b-9ffbfe19e314"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",

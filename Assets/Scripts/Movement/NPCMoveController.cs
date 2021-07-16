@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Movement
@@ -6,16 +7,10 @@ namespace Movement
     {
         private GameObject _target;
 
-        // Start is called before the first frame update
-        private void Start()
-        {
-            Init();
-        }
-
         // Update is called once per frame
         private void Update()
         {
-            if (!turnTaker.turn || !canMove) return;
+            if (!IsActive() || !canMove) return;
 
             if (!moving)
             {
@@ -30,10 +25,7 @@ namespace Movement
             }
 
             // NPC needs to end their turn once they are done moving
-            if (turnTaker.turn && !canMove)
-            {
-                turnTaker.EndTurn();
-            }
+            if (IsActive() && !canMove) turnTaker.EndTurn();
         }
 
         private void CalculatePath()

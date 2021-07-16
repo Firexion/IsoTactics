@@ -1,9 +1,22 @@
 ﻿
 using System;
+using UnityEngine.Serialization;
 
 namespace Unit
 {
     [Serializable]
+    public struct UnitData
+    {
+        public int id;
+        public string Name { get; set; }
+        public bool IsRightHanded { get; set; }
+
+        public int Brawn { get; set; }
+        public int Agility { get; set; }
+        public int Perception { get; set; }
+        public int Cunning { get; set; }
+        public int Will { get; set; }
+    }
     public abstract class CombatUnit
     {
         public int id;
@@ -28,8 +41,16 @@ namespace Unit
         public int MagicAccuracy;
         public int Evade;
 
-        protected CombatUnit()
+        protected CombatUnit(UnitData data)
         {
+            this.id = data.id;
+            this.name = data.Name;
+            this.isRightHanded = data.IsRightHanded;
+            this.Brawn = data.Brawn;
+            this.Agility = data.Agility;
+            this.Perception = data.Perception;
+            this.Cunning = data.Cunning;
+            this.Will = data.Will;
             Initialize();
         }
 

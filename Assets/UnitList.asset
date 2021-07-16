@@ -12,3 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19e5c295bd7c41bd9947c3d4ceee73fe, type: 3}
   m_Name: UnitList
   m_EditorClassIdentifier: 
+  units:
+  - id: 2
+  - id: 2
+  - id: 3
+  - id: 4

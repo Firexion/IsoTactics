@@ -1,21 +1,22 @@
+using System;
 using System.Collections;
 using DefaultNamespace;
+using Turn;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviour, PlayerActions.ICameraActions
 {
     public float zoomSpeed;
     public float panSpeed;
     public float panBuffer = 50.0f;
-    
-    [Range (0f, 100f)]
-    public float rotateSpeed;
-    
+
+    [Range(0f, 100f)] public float rotateSpeed;
+
     public float speed;
     public float damping = 6.0f;
 
-    [SerializeField] private Camera mainCamera;
+    private Camera _camera;
 
     private Vector3 _center;
 
@@ -24,11 +25,17 @@ public class CameraController : MonoBehaviour
     private bool _moving = false;
     private float _rotateAxis;
 
-    // Start is called before the first frame update
-    private void Start()
+    public TurnTakerVariable activeTurnTaker;
+
+    public PlayerActionsVariable playerActions;
+
+    private void OnEnable()
     {
+        playerActions.Value.Camera.SetCallbacks(this);
+        playerActions.Value.Camera.Enable();
+        _camera = gameObject.GetComponent<Camera>();
         _center = new Vector3(0, 0, 0);
-        transform.LookAt(_center);
+        _camera.transform.LookAt(_center);
         _origPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
     }
 
@@ -37,10 +44,18 @@ public class CameraController : MonoBehaviour
         CheckRotate();
     }
 
+    private void LateUpdate()
+    {
+        if (activeTurnTaker.Value.transform.hasChanged)
+        {
+            Focus(activeTurnTaker.Value.transform);
+        }
+    }
+
     private void CheckRotate()
     {
         if (_rotating) return;
-        _rotateAxis = InputController.playerActions.Camera.Rotate.ReadValue<float>();
+        _rotateAxis = playerActions.Value.Camera.Rotate.ReadValue<float>();
         if (_rotateAxis == 0f) return;
         StartCoroutine(nameof(RotateCoroutine));
     }
@@ -76,25 +91,25 @@ public class CameraController : MonoBehaviour
         _rotating = false;
     }
 
-    public void Focus(Transform focusTransform)
+    private void Focus(Transform focusTransform)
     {
         _center = focusTransform.position;
         SmoothMoveAndLookAt();
     }
 
-    public void Rotate(InputAction.CallbackContext context)
+    public void OnRotate(InputAction.CallbackContext context)
     {
         if (_moving || _rotating) return;
         _rotateAxis = context.ReadValue<float>();
         StartCoroutine(nameof(RotateCoroutine));
     }
 
-    public void Zoom(InputAction.CallbackContext context)
+    public void OnZoom(InputAction.CallbackContext context)
     {
         var scrollValue = context.ReadValue<Vector2>().y;
         if (scrollValue == 0.0) return;
         scrollValue = scrollValue > 0.0f ? +zoomSpeed : -zoomSpeed;
-        var newSize = mainCamera.orthographicSize - scrollValue;
-        mainCamera.orthographicSize = Mathf.Clamp(newSize, 3.0f, 20.0f);
+        var newSize = _camera.orthographicSize - scrollValue;
+        _camera.orthographicSize = Mathf.Clamp(newSize, 3.0f, 20.0f);
     }
 }

@@ -1,3 +1,4 @@
+using Events;
 using Movement;
 using UnityEngine;
 
@@ -5,22 +6,36 @@ namespace Turn
 {
     public class TurnTaker : MonoBehaviour
     {
-         public bool turn;
-        [SerializeField] public int id;
-        [SerializeField] public int nextTurn;
-        [SerializeField] public MoveController moveController;
+        public int id;
+        public bool isPlayer;
+        public TurnTakerRuntimeSet runtimeSet;
+        public int nextTurn;
+        public MoveController MoveController { get; private set; }
+        public GameEvent startTurn;
+        public GameEvent endTurn;
 
         public void StartTurn()
         {
-            turn = true;
-            moveController.StartTurn();
+            startTurn.Raise();
+            MoveController.StartTurn();
         }
 
         public void EndTurn()
         {
-            turn = false;
             nextTurn += 100;
-            moveController.EndTurn();
+            MoveController.EndTurn();
+            endTurn.Raise();
+        }
+
+        private void OnEnable()
+        {
+            runtimeSet.Add(this);
+            MoveController = gameObject.GetComponent<MoveController>();
+        }
+
+        private void OnDisable()
+        {
+            runtimeSet.Remove(this);
         }
     }
 }

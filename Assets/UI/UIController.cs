@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Events;
 using Turn;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using Utils;
 
-public class UIController : MonoBehaviour
+public class UIController : MonoBehaviour, PlayerActions.IUIActions
 {
     private static Button _moveButton;
     private static Button _attackButton;
@@ -20,6 +22,12 @@ public class UIController : MonoBehaviour
 
     private static VisualElement _menu;
 
+    public TurnTakerVariable activeTurnTaker;
+    public PlayerActionsVariable playerActions;
+
+    public GameEvent menuClosedEvent;
+    public GameEvent menuOpenedEvent;
+
     private enum ButtonEnum
     {
         None = 0,
@@ -29,8 +37,12 @@ public class UIController : MonoBehaviour
         Wait = 4
     }
 
-    private void Start()
+    public void OnEnable()
     {
+        playerActions.Value.UI.SetCallbacks(this);
+        playerActions.Value.UI.Enable();
+        
+        
         var root = GetComponent<UIDocument>().rootVisualElement;
         _moveButton = root.Q<Button>("move-button");
         _attackButton = root.Q<Button>("attack-button");
@@ -50,87 +62,18 @@ public class UIController : MonoBehaviour
         _menu = root.Q<VisualElement>("menu");
     }
 
-    private static void MoveButtonPressed()
+    public void OnNavigate(InputAction.CallbackContext context)
     {
-        if (DisabledButtons.Contains(ButtonEnum.Move)) return;
-        _menu.visible = false;
-        InputController.MenuClosed();
-        TurnManager.FindSelectableTiles();
+        if (!context.performed) return;
+        var input = context.ReadValue<Vector2>();
+        if (input.y == 0) return;
+        FocusNextButton(input.y < 0);
+        // Go Down to the next button if y is negative
     }
 
-    private static void AttackButtonPressed()
+    public void OnSubmit(InputAction.CallbackContext context)
     {
-        _menu.visible = false;
-        InputController.MenuClosed();
-        TurnManager.FindAttackTiles();
-    }
-
-    private static void SpecialButtonPressed()
-    {
-    }
-
-    private static void WaitButtonPressed()
-    {
-        _menu.visible = false;
-        TurnManager.EndCurrentTurn();
-    }
-
-    public static void FocusNextButton(bool forward)
-    {
-        if (_current == ButtonEnum.None)
-        {
-            _current = forward ? _current.Next() : _current.Previous();
-        }
-        else
-        {
-            RemoveFocus();
-            _current = forward ? _current.Next() : _current.Previous();
-            if (_current == ButtonEnum.None)
-            {
-                _current = forward ? _current.Next() : _current.Previous();
-            }
-        }
-
-        if (DisabledButtons.Contains(_current))
-        {
-            FocusNextButton(forward);
-            return;
-        }
-
-        AddFocus();
-    }
-
-    private static void RemoveFocus()
-    {
-        var button = Buttons[_current];
-        button.AddToClassList("button");
-        button.RemoveFromClassList("button-focus");
-    }
-
-    private static void AddFocus()
-    {
-        var button = Buttons[_current];
-        button.AddToClassList("button-focus");
-        button.RemoveFromClassList("button");
-    }
-
-
-    public static void ShowMenu()
-    {
-        InputController.MenuOpened();
-        _menu.visible = true;
-        FocusNextButton(true);
-    }
-
-    public static void DisableMove()
-    {
-        DisabledButtons.Add(ButtonEnum.Move);
-        _moveButton.AddToClassList("button-disabled");
-        _moveButton.RemoveFromClassList("button");
-    }
-
-    public static void Submit()
-    {
+        if (!context.started) return;
         if (DisabledButtons.Contains(_current)) return;
         switch (_current)
         {
@@ -161,7 +104,129 @@ public class UIController : MonoBehaviour
         }
     }
 
-    public static void ResetMenu()
+    public void OnCancel(InputAction.CallbackContext context)
+    {
+    }
+
+    public void OnTab(InputAction.CallbackContext context)
+    {
+    }
+
+    public void OnPoint(InputAction.CallbackContext context)
+    {
+    }
+
+    void PlayerActions.IUIActions.OnClick(InputAction.CallbackContext context)
+    {
+    }
+
+    public void OnScrollWheel(InputAction.CallbackContext context)
+    {
+    }
+
+    public void OnMiddleClick(InputAction.CallbackContext context)
+    {
+    }
+
+    public void OnRightClick(InputAction.CallbackContext context)
+    {
+    }
+
+    private void MoveButtonPressed()
+    {
+        if (DisabledButtons.Contains(ButtonEnum.Move)) return;
+        CloseMenu();
+        activeTurnTaker.Value.MoveController.FindSelectableTiles();
+    }
+
+    private void AttackButtonPressed()
+    {
+        CloseMenu();
+        // TODO activeTurnTaker.turnTaker.moveController.FindAttackTiles();
+    }
+
+    private void SpecialButtonPressed()
+    {
+        CloseMenu();
+    }
+
+    private void WaitButtonPressed()
+    {
+        CloseMenu();
+        activeTurnTaker.Value.EndTurn();
+        
+    }
+
+    private static void FocusNextButton(bool forward)
+    {
+        while (true)
+        {
+            if (_current == ButtonEnum.None)
+            {
+                _current = forward ? _current.Next() : _current.Previous();
+            }
+            else
+            {
+                RemoveFocus();
+                _current = forward ? _current.Next() : _current.Previous();
+                if (_current == ButtonEnum.None)
+                {
+                    _current = forward ? _current.Next() : _current.Previous();
+                }
+            }
+
+            if (DisabledButtons.Contains(_current))
+            {
+                continue;
+            }
+
+            AddFocus();
+            break;
+        }
+    }
+
+    private static void RemoveFocus()
+    {
+        var button = Buttons[_current];
+        button.AddToClassList("button");
+        button.RemoveFromClassList("button-focus");
+    }
+
+    private static void AddFocus()
+    {
+        Debug.Log(_current);
+        var button = Buttons[_current];
+        button.AddToClassList("button-focus");
+        button.RemoveFromClassList("button");
+    }
+
+
+    public void ShowMenu()
+    {
+        if (!activeTurnTaker.IsPlayer()) return;
+        _menu ??= GetComponent<UIDocument>().rootVisualElement.Q<VisualElement>("menu");
+        
+        _menu.visible = true;
+        FocusNextButton(true);
+        playerActions.Value.UI.Enable();
+        menuOpenedEvent.Raise();
+    }
+
+    private void CloseMenu()
+    {
+        _menu.visible = false;
+        playerActions.Value.UI.Disable();
+        menuClosedEvent.Raise();
+    }
+
+    public void DisableMove()
+    {
+        DisabledButtons.Add(ButtonEnum.Move);
+        _moveButton.AddToClassList("button-disabled");
+        _moveButton.RemoveFromClassList("button");
+    }
+
+    public void ResetMenu()
     {
         foreach (var button in Buttons)
         {
@@ -173,4 +238,5 @@ public class UIController : MonoBehaviour
         DisabledButtons.Clear();
         _current = ButtonEnum.None;
     }
+    
 }

@@ -18,6 +18,7 @@ namespace Editor
 
         private void OnEnable()
         {
+            _viewIndex = 1;
             if (!EditorPrefs.HasKey("ObjectPath")) return;
             var objectPath = EditorPrefs.GetString("ObjectPath");
             unitList = AssetDatabase.LoadAssetAtPath(objectPath, typeof(UnitList)) as UnitList;
@@ -45,6 +46,11 @@ namespace Editor
             {
                 EditorUtility.FocusProjectWindow();
                 Selection.activeObject = unitList;
+            }
+            
+            if (GUILayout.Button("Save Unit List"))
+            {
+                SaveUnits();
             }
 
             GUILayout.EndHorizontal();
@@ -91,18 +97,11 @@ namespace Editor
 
                 GUILayout.Space(60);
 
-                if (GUILayout.Button("Add Humanoid Unit", GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button("Add Unit", GUILayout.ExpandWidth(false)))
                 {
-                    AddHumanoid();
+                    AddUnit();
                 }
-                
-                GUILayout.Space(5);
-
-                if (GUILayout.Button("Add Monster Unit", GUILayout.ExpandWidth(false)))
-                {
-                    AddMonster();
-                }
-                
+             
                 GUILayout.Space(60);
 
                 if (GUILayout.Button("Delete Unit", GUILayout.ExpandWidth(false)))
@@ -111,12 +110,14 @@ namespace Editor
                 }
 
                 GUILayout.EndHorizontal();
+                Debug.Log("_view index = " + _viewIndex);
                 if (unitList.units == null)
                 {
                     Debug.Log("No units in list");
                 }
-                else if (unitList.units.Count > 0)
+                else if (unitList.units.Count > 0 && _viewIndex > 0 && _viewIndex < unitList.units.Count)
                 {
+                    var unit = unitList.units[_viewIndex - 1];
                     GUILayout.BeginHorizontal();
                     _viewIndex = Mathf.Clamp(
                         EditorGUILayout.IntField("Current Unit", _viewIndex, GUILayout.ExpandWidth(false)), 1,
@@ -125,9 +126,9 @@ namespace Editor
                     EditorGUILayout.LabelField("of   " + unitList.units.Count + "  units", "",
                         GUILayout.ExpandWidth(false));
                     GUILayout.EndHorizontal();
-
-                    unitList.units[_viewIndex - 1].name = EditorGUILayout.TextField("Name",
-                        unitList.units[_viewIndex - 1].name);
+                    
+                    unit.Name = EditorGUILayout.TextField("Name",
+                        unit.Name);
                     // unitList.units[viewIndex - 1].icon = EditorGUILayout.ObjectField("Icon",
                     //     unitList.units[viewIndex - 1].icon, typeof(Texture2D), false) as Texture2D;
 
@@ -137,24 +138,24 @@ namespace Editor
                     GUILayout.Space(10);
 
                     GUILayout.BeginHorizontal();
-                    unitList.units[_viewIndex - 1].Brawn = Mathf.Clamp(EditorGUILayout.IntField("Brawn",
-                        unitList.units[_viewIndex - 1].Brawn, GUILayout.ExpandWidth(false)), 1, 99);
+                    unit.Brawn = Mathf.Clamp(EditorGUILayout.IntField("Brawn",
+                        unit.Brawn, GUILayout.ExpandWidth(false)), 1, 99);
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
-                    unitList.units[_viewIndex - 1].Agility = Mathf.Clamp(EditorGUILayout.IntField("Agility",
-                        unitList.units[_viewIndex - 1].Agility, GUILayout.ExpandWidth(false)), 1, 99);
+                    unit.Agility = Mathf.Clamp(EditorGUILayout.IntField("Agility",
+                        unit.Agility, GUILayout.ExpandWidth(false)), 1, 99);
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
-                    unitList.units[_viewIndex - 1].Perception = Mathf.Clamp(EditorGUILayout.IntField("Perception",
-                        unitList.units[_viewIndex - 1].Perception, GUILayout.ExpandWidth(false)), 1, 99);
+                    unit.Perception = Mathf.Clamp(EditorGUILayout.IntField("Perception",
+                        unit.Perception, GUILayout.ExpandWidth(false)), 1, 99);
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
-                    unitList.units[_viewIndex - 1].Cunning = Mathf.Clamp(EditorGUILayout.IntField("Cunning",
-                        unitList.units[_viewIndex - 1].Cunning, GUILayout.ExpandWidth(false)), 1, 99);
+                    unit.Cunning = Mathf.Clamp(EditorGUILayout.IntField("Cunning",
+                        unit.Cunning, GUILayout.ExpandWidth(false)), 1, 99);
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
-                    unitList.units[_viewIndex - 1].Will = Mathf.Clamp(EditorGUILayout.IntField("Will",
-                        unitList.units[_viewIndex - 1].Will, GUILayout.ExpandWidth(false)), 1, 99);
+                    unit.Will = Mathf.Clamp(EditorGUILayout.IntField("Will",
+                        unit.Will, GUILayout.ExpandWidth(false)), 1, 99);
                     GUILayout.EndHorizontal();
 
                     GUILayout.Space(10);
@@ -169,6 +170,7 @@ namespace Editor
                     GUILayout.EndHorizontal();
 
                     GUILayout.Space(10);
+                    unitList.units[_viewIndex - 1] = unit;
                 }
                 else
                 {
@@ -190,7 +192,7 @@ namespace Editor
             _viewIndex = 1;
             unitList = CreateUnitList.Create();
             if (!unitList) return;
-            unitList.units = new List<CombatUnit>();
+            unitList.units = new List<UnitData>();
             var relPath = AssetDatabase.GetAssetPath(unitList);
             EditorPrefs.SetString("ObjectPath", relPath);
         }
@@ -201,31 +203,63 @@ namespace Editor
             if (!absPath.StartsWith(Application.dataPath)) return;
             var relPath = absPath.Substring(Application.dataPath.Length - "Assets".Length);
             unitList = AssetDatabase.LoadAssetAtPath(relPath, typeof(UnitList)) as UnitList;
-            if (unitList == null) return;
-            unitList.units ??= new List<CombatUnit>();
-            if (unitList)
+            if (unitList == null)
             {
-                EditorPrefs.SetString("ObjectPath", relPath);
+                Debug.Log("Asset is null");
+                return;
             }
+
+            if (unitList.units == null)
+            {
+                Debug.Log("unit list is created with null units");
+            }
+            else
+            {
+                Debug.Log("unit list is created with " + unitList.units.Count + " units");
+            }
+            unitList.units ??= new List<UnitData>();
+            EditorPrefs.SetString("ObjectPath", relPath);
         }
 
-        private void AddHumanoid()
+        private static void SaveUnits()
         {
-            var newUnit = new Humanoid {name = "New Humanoid"};
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            // var absPath = EditorUtility.SaveFilePanel("Select Unit List", "", "", "");
+            // if (!absPath.StartsWith(Application.dataPath)) return;
+            // var relPath = absPath.Substring(Application.dataPath.Length - "Assets".Length);
+            // unitList = AssetDatabase.SaveAssets() as UnitList;
+            // if (unitList == null) return;
+            // unitList.units ??= new List<UnitData>();
+            // if (unitList)
+            // {
+            //     EditorPrefs.SetString("ObjectPath", relPath);
+            // }
+        }
+
+        private void AddUnit()
+        {
+            var newUnit = new UnitData
+            {
+                id = _viewIndex + 1,
+                Name = "New Unit",
+                IsRightHanded = true,
+                Brawn = 20,
+                Agility = 20,
+                Perception = 20,
+                Cunning = 20,
+                Will = 20
+            };
             unitList.units.Add(newUnit);
             _viewIndex = unitList.units.Count;
         }
-        
-        private void AddMonster()
-        {
-            var newUnit = new Monster() {name = "New Monster"};
-            unitList.units.Add(newUnit);
-            _viewIndex = unitList.units.Count;
-        }
+      
 
         private void DeleteUnit(int index)
         {
             unitList.units.RemoveAt(index);
+            //_viewIndex = unitList.units.Count > 0 ? unitList.units.Count : 1;
         }
     }
 }

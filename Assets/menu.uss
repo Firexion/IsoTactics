@@ -28,9 +28,8 @@
     width: 156px;
     height: 51px;
     font-size: 45px;
-    background-color: #576574;
-    color: #c8d6e5;
+    background-color: rgb(87, 101, 116);
+    color: rgb(200, 214, 229);
     border-radius: 10px;
     margin: 4px;
-    
 }

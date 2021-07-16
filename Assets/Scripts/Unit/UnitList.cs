@@ -5,6 +5,6 @@ namespace Unit
 {
     public class UnitList : ScriptableObject
     {
-        public List<CombatUnit> units;
+        public List<UnitData> units;
     }
 }

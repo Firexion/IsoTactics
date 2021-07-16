@@ -1,62 +1,47 @@
 using System.Collections.Generic;
-using DefaultNamespace;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Turn
 {
     public class TurnManager : MonoBehaviour
     {
         private static readonly Dictionary<int, Queue<TurnTaker>> TurnOrder = new Dictionary<int, Queue<TurnTaker>>();
+        private static int _turnClock = 0;
+        public TurnTakerVariable activeTurnTaker;
 
-        private static int _turnClock;
-        private static int _activeUnitIndex = -1;
-        private static TurnTaker _activeTurnTaker;
-
-        private static CameraController _cameraController;
-        private void Start()
+        public TurnTakerRuntimeSet RuntimeSet;
+        
+        private void Awake()
         {
-            _cameraController = FindObjectOfType<CameraController>();
-            var turnTakers = FindObjectsOfType<TurnTaker>();
-            foreach (var turnTaker in turnTakers) AddTurnTaker(turnTaker);
+            foreach (var turnTaker in RuntimeSet.Items) AddTurnTaker(turnTaker);
+            GetNextTurn();
         }
 
-        // Update is called once per frame
-        private void Update()
+        public void EndTurn()
         {
-            if (_activeUnitIndex == -1)
+            // Move Unit to the next turn value and if there is anyone left at this turn count, they get a turn
+            AddTurnTaker(activeTurnTaker.Value);
+            if (!TurnOrder.TryGetValue(_turnClock, out var turnTakers)) return;
+            if (turnTakers.Count > 1)
             {
-                // Iterate _turnClock until it's someone's turn
-                while (_activeUnitIndex == -1)
-                {
-                    _turnClock++;
-                    if (!TurnOrder.TryGetValue(_turnClock, out var turnTakers)) continue;
-                    if (turnTakers.Count == 0) continue;
-                    SetActive(turnTakers.Peek());
-                }
+                turnTakers.Dequeue();
+                activeTurnTaker.SetTurnTaker(turnTakers.Peek());
             }
-            else if (!_activeTurnTaker.turn) // unit just finished their turn
+            else
             {
-                // Move Unit to the next turn value and if there is anyone left at this turn count, they get a turn
-                AddTurnTaker(_activeTurnTaker);
-                if (!TurnOrder.TryGetValue(_turnClock, out var turnTakers)) return;
-                if (turnTakers.Count > 1)
-                {
-                    turnTakers.Dequeue();
-                    SetActive(turnTakers.Peek());
-                }
-                else
-                {
-                    SetInactive();
-                }
+                activeTurnTaker.SetInactive();
+                GetNextTurn();
             }
         }
 
-        private void LateUpdate()
+        private void GetNextTurn()
         {
-            if (_activeUnitIndex != -1 && _activeTurnTaker.transform.hasChanged)
+            while (activeTurnTaker.Value == null)
             {
-                _cameraController.Focus(_activeTurnTaker.transform);
+                _turnClock++;
+                if (!TurnOrder.TryGetValue(_turnClock, out var turnTakers)) continue;
+                if (turnTakers.Count == 0) continue;
+                activeTurnTaker.SetTurnTaker(turnTakers.Peek());
             }
         }
 
@@ -72,53 +57,6 @@ namespace Turn
                 queue.Enqueue(turnTaker);
                 TurnOrder.Add(turnTaker.nextTurn, queue);
             }
-        }
-
-        private static void SetInactive()
-        {
-            _activeTurnTaker.EndTurn();
-            TurnOrder.Remove(_turnClock);
-            _activeTurnTaker = null;
-            _activeUnitIndex = -1;
-        }
-
-        private static void SetActive(TurnTaker turnTaker)
-        {
-            _cameraController.Focus(turnTaker.transform);
-            _activeTurnTaker = turnTaker;
-            _activeUnitIndex = turnTaker.id;
-            turnTaker.StartTurn();
-        }
-
-        public static void EndCurrentTurn()
-        {
-            _activeTurnTaker.EndTurn();
-            InputController.ResetMenu();
-        }
-
-        public static void FindSelectableTiles()
-        {
-            _activeTurnTaker.moveController.FindSelectableTiles();
-        }
-
-        public static void FindAttackTiles()
-        {
-            // TODO
-        }
-
-        public static void TileClicked(InputAction.CallbackContext context)
-        {
-            _activeTurnTaker.moveController.OnClick(context);
-        }
-
-        public static void TileSelected(InputAction.CallbackContext context)
-        {
-            _activeTurnTaker.moveController.OnSelect(context);
-        }
-
-        public static void TileMoved(InputAction.CallbackContext context)
-        {
-            _activeTurnTaker.moveController.OnMove(context);
         }
     }
 }

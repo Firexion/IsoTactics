@@ -11,7 +11,9 @@ namespace Movement
         private const int MoveStraightCost = 10;
         private const int MoveDiagonalCost = 14;
 
-        public TurnTaker turnTaker;
+        protected TurnTaker turnTaker;
+        
+        public TurnTakerVariable activeTurnTaker;
 
         protected enum State
         {
@@ -21,7 +23,7 @@ namespace Movement
             None
         };
 
-        protected readonly List<Tile> selectableTiles = new List<Tile>();
+        private readonly List<Tile> _selectableTiles = new List<Tile>();
 
         private readonly Stack<Tile> _path = new Stack<Tile>();
         protected Tile currentTile;
@@ -43,7 +45,7 @@ namespace Movement
 
         public Tile actualTargetTile;
 
-        protected void Init()
+        protected void Awake()
         {
             turnTaker = GetComponent<TurnTaker>();
             _halfHeight = GetComponent<Collider>().bounds.extents.y;
@@ -102,7 +104,7 @@ namespace Movement
             {
                 var t = process.Dequeue();
 
-                selectableTiles.Add(t);
+                _selectableTiles.Add(t);
                 t.selectable = true;
 
                 if (t.distance >= moveRange) continue;
@@ -172,21 +174,11 @@ namespace Movement
             }
         }
 
-        public virtual void FinishedMoving()
+        protected virtual void FinishedMoving()
         {
             RemoveSelectableTiles();
             moving = false;
             canMove = false;
-        }
-
-        public virtual void OnMove(InputAction.CallbackContext context)
-        {
-        }
-        public virtual void OnSelect(InputAction.CallbackContext context)
-        {
-        }
-        public virtual void OnClick(InputAction.CallbackContext context)
-        {
         }
 
         private void RemoveSelectableTiles()
@@ -197,12 +189,12 @@ namespace Movement
                 GetCurrentTile();
             }
 
-            foreach (var tile in selectableTiles)
+            foreach (var tile in _selectableTiles)
             {
                 tile.Reset();
             }
 
-            selectableTiles.Clear();
+            _selectableTiles.Clear();
         }
 
         private void CalculateHeading(Vector3 target)
@@ -401,6 +393,11 @@ namespace Movement
 
             // TODO What if there is no path to target tile
             Debug.Log("Path not found");
+        }
+
+        protected bool IsActive()
+        {
+            return activeTurnTaker.IsActive(turnTaker);
         }
     }
 }
