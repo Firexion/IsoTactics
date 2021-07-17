@@ -44,7 +44,7 @@ namespace Turn
 
         private void GetNextTurn()
         {
-            while (activeTurnTaker.Value == null)
+            while (activeTurnTaker.Value == null && TurnOrder.Count > 0)
             {
                 _turnClock++;
                 if (!TurnOrder.TryGetValue(_turnClock, out var turnTakers)) continue;
