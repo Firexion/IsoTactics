@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ namespace Turn
         public TurnTakerVariable activeTurnTaker;
 
         public TurnTakerRuntimeSet RuntimeSet;
-        
+
         private void Awake()
         {
             foreach (var turnTaker in RuntimeSet.Items)
@@ -55,7 +54,7 @@ namespace Turn
 
         private static void AddTurnTaker(TurnTaker turnTaker)
         {
-            if (TurnOrder.TryGetValue(turnTaker.nextTurn, out var turnTakersAtTime))
+            if (TurnOrder.TryGetValue(turnTaker.NextTurn, out var turnTakersAtTime))
             {
                 turnTakersAtTime.Enqueue(turnTaker);
             }
@@ -63,7 +62,7 @@ namespace Turn
             {
                 var queue = new Queue<TurnTaker>();
                 queue.Enqueue(turnTaker);
-                TurnOrder.Add(turnTaker.nextTurn, queue);
+                TurnOrder.Add(turnTaker.NextTurn, queue);
             }
         }
     }

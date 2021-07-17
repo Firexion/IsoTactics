@@ -1,30 +1,32 @@
 using System;
 using Events;
 using Movement;
+using Unit;
 using UnityEngine;
 
 namespace Turn
 {
     public class TurnTaker : MonoBehaviour
     {
-        public int id;
+     //   public UnitObject unit;
         public bool isPlayer;
         public TurnTakerRuntimeSet runtimeSet;
-        public int nextTurn;
+        public int NextTurn { get; set; }
         public MoveController MoveController { get; private set; }
         public GameEvent startTurn;
         public GameEvent endTurn;
 
+        public RuntimeUnitStats Stats { get; private set; }
+
         public void StartTurn()
         {
-            Debug.Log("Starting turn for " + id);
             startTurn.Raise();
             MoveController.StartTurn();
         }
 
         public void EndTurn()
         {
-            nextTurn += 100;
+            NextTurn += 100;
             MoveController.EndTurn();
             endTurn.Raise();
         }
@@ -37,12 +39,20 @@ namespace Turn
 
         private void Awake()
         {
+            Stats = GetComponent<RuntimeUnitStats>();
+            CalculateInitialNextTurn();
             runtimeSet.Add(this);
         }
 
         private void OnDisable()
         {
             runtimeSet.Remove(this);
+        }
+        
+        private void CalculateInitialNextTurn()
+        {
+            Debug.Log("Stats: " + Stats);
+            NextTurn = 100 - Stats.unit.Speed;
         }
     }
 }

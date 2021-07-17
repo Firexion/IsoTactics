@@ -1,9 +1,10 @@
-﻿namespace Unit
+﻿using UnityEngine;
+
+namespace Unit
 {
-    public class Monster : CombatUnit
+    [CreateAssetMenu(menuName = "Units/Create Monster")]
+    public class Monster : UnitObject
     {
-        public Monster(UnitData data) : base(data)
-        {
-        }
+        
     }
 }

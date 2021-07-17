@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7235fc5dc05d4a41914ec4e62ee1af80, type: 3}
-  m_Name: TurnTakerRuntimeSet
+  m_Script: {fileID: 11500000, guid: 19e5c295bd7c41bd9947c3d4ceee73fe, type: 3}
+  m_Name: PlayerUnits
   m_EditorClassIdentifier: 
-  Items:
-  - {fileID: 0}
+  units:
+  - {fileID: 11400000, guid: 6f64467595807e14999b8596a2b875f7, type: 2}
+  - {fileID: 11400000, guid: 583b16648e01a7b4a958cbffa6ed1052, type: 2}

@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace Unit
 {
+    [CreateAssetMenu(menuName = "Units/Unit List")]
     public class UnitList : ScriptableObject
     {
-        public List<UnitData> units;
+        public List<UnitObject> units;
     }
 }

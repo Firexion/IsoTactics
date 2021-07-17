@@ -7,6 +7,7 @@ TagManager:
   - Tile
   - NPC
   - SelectionTile
+  - Healthbar
   layers:
   - Default
   - TransparentFX

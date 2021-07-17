@@ -31,8 +31,6 @@ namespace Movement
 
         public bool moving;
         public bool canMove = true;
-        public int moveRange = 5;
-        public float jumpHeight = 2;
         public float moveSpeed = 2;
         public float jumpVelocity = 4.5f;
 
@@ -86,7 +84,7 @@ namespace Movement
         {
             foreach (var tile in tiles.Items)
             {
-                tile.FindNeighbors(jumpHeight, target);
+                tile.FindNeighbors(turnTaker.Stats.unit.Jump, target);
             }
         }
 
@@ -108,7 +106,7 @@ namespace Movement
                 _selectableTiles.Add(t);
                 t.selectable = true;
 
-                if (t.distance >= moveRange) continue;
+                if (t.distance >= turnTaker.Stats.unit.Move / MoveStraightCost) continue;
                 foreach (var tile in t.adjacencyList.Where(tile => !tile.visited))
                 {
                     tile.parent = t;
@@ -321,14 +319,14 @@ namespace Movement
             }
 
             // End tile is reachable.
-            if (tempPath.Count <= moveRange)
+            if (tempPath.Count <= turnTaker.Stats.unit.Move / MoveStraightCost)
             {
                 return t.parent;
             }
 
             // End tile isn't reachable. Find closest tile to end that is reachable
             Tile endTile = null;
-            for (var i = 0; i <= moveRange; i++)
+            for (var i = 0; i <= turnTaker.Stats.unit.Move / MoveStraightCost; i++)
             {
                 endTile = tempPath.Pop();
             }

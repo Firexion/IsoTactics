@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Utils
 {
@@ -20,6 +21,7 @@ namespace Utils
             var j = Array.IndexOf(arr, src) - 1;
             return (-1 == j) ? arr[arr.Length - 1] : arr[j];
         }
-        
+     
+        public static Vector2 WithNewX(this Vector2 vector, float newX) => new Vector2(newX, vector.y);
     }
 }

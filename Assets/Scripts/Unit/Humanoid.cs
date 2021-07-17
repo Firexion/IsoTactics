@@ -1,9 +1,10 @@
-﻿namespace Unit
+﻿using UnityEngine;
+
+namespace Unit
 {
-    public class Humanoid : CombatUnit
+    [CreateAssetMenu(menuName = "Units/Create Humanoid")]
+    public class Humanoid : UnitObject
     {
-        public Humanoid(UnitData data) : base(data)
-        {
-        }
+        public bool isRightHanded;
     }
 }

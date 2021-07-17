@@ -9,8 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7235fc5dc05d4a41914ec4e62ee1af80, type: 3}
-  m_Name: TurnTakerRuntimeSet
+  m_Script: {fileID: 11500000, guid: c75181e1f9f44aa785ac4e986d47547b, type: 3}
+  m_Name: Archer
   m_EditorClassIdentifier: 
-  Items:
-  - {fileID: 0}
+  id: 0
+  name: Shootie pants
+  brawn: 60
+  agility: 60
+  perception: 60
+  cunning: 60
+  will: 60
+  isRightHanded: 1

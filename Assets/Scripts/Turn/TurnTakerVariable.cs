@@ -26,7 +26,7 @@ namespace Turn
 
         public bool IsActive(TurnTaker turnTaker)
         {
-            return Value != null && Value.id == turnTaker.id;
+            return Value != null && Value.Stats.unit.id == turnTaker.Stats.unit.id;
         }
 
         public bool IsPlayer()
