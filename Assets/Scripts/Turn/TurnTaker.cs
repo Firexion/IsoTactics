@@ -1,4 +1,3 @@
-using System;
 using Events;
 using Movement;
 using Unit;
@@ -11,8 +10,9 @@ namespace Turn
      //   public UnitObject unit;
         public bool isPlayer;
         public TurnTakerRuntimeSet runtimeSet;
-        public int NextTurn { get; set; }
+        public int NextTurn { get; private set; }
         public MoveController MoveController { get; private set; }
+        public Attack.Attack Attack { get; private set; }
         public GameEvent startTurn;
         public GameEvent endTurn;
 
@@ -34,7 +34,8 @@ namespace Turn
         private void OnEnable()
         {
             runtimeSet.Add(this);
-            MoveController = gameObject.GetComponent<MoveController>();
+            MoveController = GetComponent<MoveController>();
+            Attack = GetComponent<Attack.Attack>();
         }
 
         private void Awake()
@@ -51,7 +52,6 @@ namespace Turn
         
         private void CalculateInitialNextTurn()
         {
-            Debug.Log("Stats: " + Stats);
             NextTurn = 100 - Stats.unit.Speed;
         }
     }

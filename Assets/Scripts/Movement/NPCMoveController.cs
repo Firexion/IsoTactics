@@ -1,4 +1,4 @@
-using System;
+using DefaultNamespace;
 using UnityEngine;
 
 namespace Movement
@@ -30,7 +30,7 @@ namespace Movement
 
         private void CalculatePath()
         {
-            var targetTile = GetTargetTile(_target);
+            var targetTile = SelectableTiles.GetTargetTile(_target);
             FindPath(targetTile);
         }
 

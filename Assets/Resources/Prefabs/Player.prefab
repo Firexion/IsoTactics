@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 5405987082637384850}
   - component: {fileID: 1323567416028877036}
   - component: {fileID: 5593969242872966207}
+  - component: {fileID: 2185512074070511022}
+  - component: {fileID: 7693556501322253817}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -115,7 +117,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTurnTaker: {fileID: 11400000, guid: 5b631ee7b5e20b644837523666ceeca7, type: 2}
-  tiles: {fileID: 11400000, guid: 58776fa7fb2dc6744848557953f9d81a, type: 2}
   moving: 0
   canMove: 1
   moveSpeed: 2
@@ -183,10 +184,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6429ee416c394325a4998722efb2124f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
-  currentHealth: 0
   healthbar: {fileID: 2728074027105240152}
   unit: {fileID: 0}
+--- !u!114 &2185512074070511022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5405987082637384856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d95723470acc4cf4b9ecafdc23423c8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiles: {fileID: 11400000, guid: 58776fa7fb2dc6744848557953f9d81a, type: 2}
+--- !u!114 &7693556501322253817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5405987082637384856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4452b722a6694ba198fe0ec9e9acafbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  range: 1
+  heightAllowance: 1
+  damage: 20
+  damageDone: {fileID: 11400000, guid: fd2f391a6eafe1041b6bfc6a4cf36595, type: 2}
+  playerActions: {fileID: 11400000, guid: 912995f6b0f1dd746b6551645d5eee29, type: 2}
+  currentlySelectedTile: {fileID: 11400000, guid: c22cc8d9235997a4e949a856e5847616, type: 2}
+  activeTurnTaker: {fileID: 11400000, guid: 5b631ee7b5e20b644837523666ceeca7, type: 2}
+  invertControls: 1
+  tileMoveFrequency: 0.15
+  initialTileMoveDelay: 0.3
 --- !u!1001 &6409889445419854112
 PrefabInstance:
   m_ObjectHideFlags: 0

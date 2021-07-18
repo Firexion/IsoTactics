@@ -4,27 +4,23 @@ namespace Unit
 {
     public class RuntimeUnitStats : MonoBehaviour
     {
-        public int maxHealth;
-        public int currentHealth;
+        private int _maxHealth;
+        private int _currentHealth;
         
         public HealthBarUI healthbar;
         public UnitObject unit;
         private void Start()
         {
-            maxHealth = unit.Hp;
-            currentHealth = unit.Hp;
-            healthbar.SetMaxHealth(maxHealth);
+            _maxHealth = unit.Hp;
+            _currentHealth = unit.Hp;
+            healthbar.SetMaxHealth(_maxHealth);
         }
 
-        private void Update()
+        public void TakeDamage(int damage)
         {
-          
-        }
-
-        private void TakeDamage(int damage)
-        {
-            currentHealth -= damage;
-            healthbar.SetMaxHealth(maxHealth);
+            Debug.Log("Taking " + damage + " damage");
+            _currentHealth -= damage;
+            healthbar.SetHealth(_currentHealth);
         }
     }
 }

@@ -19,6 +19,5 @@ namespace Movement
             if (Value != null) Value.currentlySelecting = false;
             Value = null;
         }
-
     }
 }

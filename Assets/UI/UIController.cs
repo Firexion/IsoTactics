@@ -146,12 +146,12 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
     private void AttackButtonPressed()
     {
         CloseMenu();
-        // TODO activeTurnTaker.turnTaker.moveController.FindAttackTiles();
+        activeTurnTaker.Value.Attack.FindSelectableTiles();
     }
 
     private void SpecialButtonPressed()
     {
-        CloseMenu();
+       // CloseMenu();
     }
 
     private void WaitButtonPressed()
@@ -224,9 +224,20 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
 
     public void DisableMove()
     {
-        DisabledButtons.Add(ButtonEnum.Move);
-        _moveButton.AddToClassList("button-disabled");
-        _moveButton.RemoveFromClassList("button");
+        DisableButton(_moveButton, ButtonEnum.Move);
+    }
+
+    private static void DisableButton(VisualElement button, ButtonEnum type)
+    {
+        DisabledButtons.Add(type);
+        button.AddToClassList("button-disabled");
+        button.RemoveFromClassList("button");
+    }
+    
+    public void DisableAttackAndSpecial()
+    {
+        DisableButton(_attackButton, ButtonEnum.Attack);
+        DisableButton(_specialButton, ButtonEnum.Special);
     }
 
     public void ResetMenu()

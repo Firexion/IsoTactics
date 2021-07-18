@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 5565899567093887208}
   - component: {fileID: 5565899567093887211}
   - component: {fileID: 1334942165484026601}
+  - component: {fileID: 1978357760388033930}
+  - component: {fileID: 2230137123296931928}
   m_Layer: 0
   m_Name: NPC
   m_TagString: NPC
@@ -114,7 +116,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTurnTaker: {fileID: 11400000, guid: 5b631ee7b5e20b644837523666ceeca7, type: 2}
-  tiles: {fileID: 11400000, guid: 58776fa7fb2dc6744848557953f9d81a, type: 2}
   moving: 0
   canMove: 1
   moveSpeed: 2
@@ -148,10 +149,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6429ee416c394325a4998722efb2124f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
-  currentHealth: 0
   healthbar: {fileID: 7886049625137634415}
   unit: {fileID: 0}
+--- !u!114 &1978357760388033930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5565899567093887210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d95723470acc4cf4b9ecafdc23423c8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiles: {fileID: 11400000, guid: 58776fa7fb2dc6744848557953f9d81a, type: 2}
+--- !u!114 &2230137123296931928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5565899567093887210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d010ffa880414cc399c7ee7e115cb25d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  range: 1
+  heightAllowance: 1
+  damage: 20
 --- !u!1001 &1177815516807115031
 PrefabInstance:
   m_ObjectHideFlags: 0

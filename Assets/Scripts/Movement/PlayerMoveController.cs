@@ -36,7 +36,7 @@ namespace Movement
         public override void StartTurn()
         {
             base.StartTurn();
-            GetCurrentTile();
+            var currentTile = SelectableTiles.GetCurrentTile();
             currentlySelectedTile.SetValue(currentTile);
         }
 
@@ -53,7 +53,7 @@ namespace Movement
         {
             base.FinishedMoving();
             finishedMoving.Raise();
-            GetCurrentTile();
+            var currentTile = SelectableTiles.GetCurrentTile();
             currentlySelectedTile.SetValue(currentTile);
         }
 
@@ -61,8 +61,8 @@ namespace Movement
         {
             playerActions.Value.Tile.SetCallbacks(this);
             playerActions.Value.Tile.Enable();
-            base.FindSelectableTiles();
-            currentlySelectedTile.SetValue(currentTile);
+            SelectableTiles.Find(turnTaker.Stats.unit.Move / MoveStraightCost, turnTaker.Stats.unit.Jump, false);
+            currentlySelectedTile.SetValue(SelectableTiles.GetCurrentTile());
         }
 
 

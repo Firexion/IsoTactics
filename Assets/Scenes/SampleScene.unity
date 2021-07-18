@@ -14211,6 +14211,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2745804995001707061, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
+      propertyPath: range
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2745804995001707061, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
+      propertyPath: damage
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2745804995001707061, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
+      propertyPath: heightAllowance
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5221356620340490739, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
       propertyPath: cam
       value: 
@@ -14299,6 +14311,18 @@ PrefabInstance:
     - target: {fileID: 1655291834605949457, guid: af5500419eee21a49b0a0e3e416d4e6f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2230137123296931928, guid: af5500419eee21a49b0a0e3e416d4e6f, type: 3}
+      propertyPath: range
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2230137123296931928, guid: af5500419eee21a49b0a0e3e416d4e6f, type: 3}
+      propertyPath: damage
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2230137123296931928, guid: af5500419eee21a49b0a0e3e416d4e6f, type: 3}
+      propertyPath: heightAllowance
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5565899567093887210, guid: af5500419eee21a49b0a0e3e416d4e6f, type: 3}
       propertyPath: m_Name
@@ -14420,6 +14444,18 @@ PrefabInstance:
     - target: {fileID: 6797118910705912358, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7693556501322253817, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
+      propertyPath: range
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7693556501322253817, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
+      propertyPath: damage
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7693556501322253817, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
+      propertyPath: heightAllowance
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}

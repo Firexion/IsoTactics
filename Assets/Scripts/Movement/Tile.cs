@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Utils;
@@ -17,17 +18,33 @@ namespace Movement
         // Needed for BFS (Breadth first search)
         public bool visited = false;
         public Tile parent = null;
-        public int distance = 0;  // how far each tile is from the start tile
-    
+        public int distance = 0; // how far each tile is from the start tile
+
         // Needed for A*
-        public float f = 0;  // Cost from parent to current tile
-        public float g = 0;  // Cost from processed tile to destination
-        public float h = 0;  // Hueristic cost = G + H
+        public float f = 0; // Cost from parent to current tile
+        public float g = 0; // Cost from processed tile to destination
+        public float h = 0; // Hueristic cost = G + H
 
         private Renderer _selectableRenderer;
 
         public TileRuntimeSet tiles;
-        
+
+        public GameObject OccupiedBy { get; private set; }
+
+        private void Awake()
+        {
+            OccupiedBy = Physics.Raycast(transform.position, Vector3.up, out var hit, 1)
+                ? hit.collider.gameObject
+                : null;
+        }
+
+        private void LateUpdate()
+        {
+            OccupiedBy = Physics.Raycast(transform.position, Vector3.up, out var hit, 1)
+                ? hit.collider.gameObject
+                : null;
+        }
+
         private void OnEnable()
         {
             tiles.Add(this);
@@ -83,17 +100,17 @@ namespace Movement
             f = g = h = 0;
         }
 
-        public void FindNeighbors(float jumpHeight, Tile tile)
+        public void FindNeighbors(float heightAllowance, Tile tile, bool allowOccupied)
         {
             Reset();
 
-            CheckTile(Vector3.forward, jumpHeight, tile);
-            CheckTile(-Vector3.forward, jumpHeight, tile);
-            CheckTile(Vector3.right, jumpHeight, tile);
-            CheckTile(-Vector3.right, jumpHeight, tile);
+            CheckTile(Vector3.forward, heightAllowance, tile, allowOccupied);
+            CheckTile(-Vector3.forward, heightAllowance, tile, allowOccupied);
+            CheckTile(Vector3.right, heightAllowance, tile, allowOccupied);
+            CheckTile(-Vector3.right, heightAllowance, tile, allowOccupied);
         }
 
-        public void CheckTile(Vector3 direction, float jumpHeight, Tile tileTarget)
+        public void CheckTile(Vector3 direction, float jumpHeight, Tile tileTarget, bool allowOccupied)
         {
             var halfExtents = new Vector3(0.25f, (1 + jumpHeight) / 2.0f, 0.25f);
             var colliders = Physics.OverlapBox(transform.position + direction, halfExtents);
@@ -102,12 +119,16 @@ namespace Movement
             {
                 var tile = item.GetComponent<Tile>();
                 if (tile == null || !tile.walkable) continue;
-                RaycastHit hit;
-                if (!Physics.Raycast(tile.transform.position, Vector3.up, out hit, 1) || (tile == tileTarget))
+                if (allowOccupied || !tile.IsOccupied() || tile == tileTarget)
                 {
                     adjacencyList.Add(tile);
                 }
             }
+        }
+
+        public bool IsOccupied()
+        {
+            return OccupiedBy != null;
         }
     }
 }

@@ -1,21 +1,18 @@
 using System.Collections.Generic;
-using System.Linq;
+using DefaultNamespace;
 using Turn;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Movement
 {
     public abstract class MoveController : MonoBehaviour
     {
-        private const int MoveStraightCost = 10;
+        protected const int MoveStraightCost = 10;
         private const int MoveDiagonalCost = 14;
 
         protected TurnTaker turnTaker;
         
         public TurnTakerVariable activeTurnTaker;
-        public TileRuntimeSet tiles;
-
         protected enum State
         {
             Falling,
@@ -24,10 +21,8 @@ namespace Movement
             None
         };
 
-        private readonly List<Tile> _selectableTiles = new List<Tile>();
 
         private readonly Stack<Tile> _path = new Stack<Tile>();
-        protected Tile currentTile;
 
         public bool moving;
         public bool canMove = true;
@@ -43,9 +38,11 @@ namespace Movement
         private Vector3 _jumpTarget;
 
         public Tile actualTargetTile;
+        protected SelectableTiles SelectableTiles; 
 
         protected void Awake()
         {
+            SelectableTiles = GetComponent<SelectableTiles>();
             turnTaker = GetComponent<TurnTaker>();
             _halfHeight = GetComponent<Collider>().bounds.extents.y;
         }
@@ -60,63 +57,6 @@ namespace Movement
         {
             canMove = false;
             moving = false;
-        }
-
-        protected void GetCurrentTile()
-        {
-            currentTile = GetTargetTile(gameObject);
-            currentTile.current = true;
-        }
-
-        protected static Tile GetTargetTile(GameObject target)
-        {
-            Tile tile = null;
-
-            if (Physics.Raycast(target.transform.position, -Vector3.up, out var hit, 1))
-            {
-                tile = hit.collider.GetComponent<Tile>();
-            }
-
-            return tile;
-        }
-
-        private void ComputeAdjacencyLists(Tile target)
-        {
-            foreach (var tile in tiles.Items)
-            {
-                tile.FindNeighbors(turnTaker.Stats.unit.Jump, target);
-            }
-        }
-
-        public virtual void FindSelectableTiles()
-        {
-            ComputeAdjacencyLists(null);
-            GetCurrentTile();
-
-            var process = new Queue<Tile>();
-
-            process.Enqueue(currentTile);
-            currentTile.visited = true;
-            //currentTile.parent = ??  leave as null 
-
-            while (process.Count > 0)
-            {
-                var t = process.Dequeue();
-
-                _selectableTiles.Add(t);
-                t.selectable = true;
-
-                if (t.distance >= turnTaker.Stats.unit.Move / MoveStraightCost) continue;
-                foreach (var tile in t.adjacencyList.Where(tile => !tile.visited))
-                {
-                    tile.parent = t;
-                    tile.visited = true;
-                    tile.distance = 1 + t.distance;
-                    process.Enqueue(tile);
-                }
-            }
-
-            currentTile.selectable = false;
         }
 
         protected void MoveToTile(Tile tile)
@@ -175,26 +115,11 @@ namespace Movement
 
         protected virtual void FinishedMoving()
         {
-            RemoveSelectableTiles();
+            SelectableTiles.Remove();
             moving = false;
             canMove = false;
         }
-
-        private void RemoveSelectableTiles()
-        {
-            if (currentTile != null)
-            {
-                currentTile.current = false;
-                GetCurrentTile();
-            }
-
-            foreach (var tile in _selectableTiles)
-            {
-                tile.Reset();
-            }
-
-            _selectableTiles.Clear();
-        }
+       
 
         private void CalculateHeading(Vector3 target)
         {
@@ -336,8 +261,8 @@ namespace Movement
 
         protected void FindPath(Tile target)
         {
-            ComputeAdjacencyLists(target);
-            GetCurrentTile();
+            SelectableTiles.ComputeAdjacencyLists(target, turnTaker.Stats.unit.Jump, false);
+            var currentTile = SelectableTiles.GetCurrentTile();
 
             var openList = new List<Tile>();
             var closedList = new List<Tile>();
@@ -345,7 +270,6 @@ namespace Movement
             openList.Add(currentTile);
             currentTile.h = Vector3.Distance(currentTile.transform.position, target.transform.position);
             currentTile.f = currentTile.h;
-
             while (openList.Count > 0)
             {
                 var t = FindLowestF(openList);
@@ -397,6 +321,11 @@ namespace Movement
         protected bool IsActive()
         {
             return activeTurnTaker.IsActive(turnTaker);
+        }
+
+        public virtual void FindSelectableTiles()
+        {
+            SelectableTiles.Find(turnTaker.Stats.unit.Move / MoveStraightCost, turnTaker.Stats.unit.Jump, false);
         }
     }
 }
