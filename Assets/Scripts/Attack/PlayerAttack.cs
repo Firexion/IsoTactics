@@ -7,7 +7,7 @@ namespace Attack
     {
         private TileInputController _tileMovementController;
 
-        protected override void Awake()
+        private void Awake()
         {
             _tileMovementController = GetComponent<TileInputController>();
         }
@@ -15,6 +15,11 @@ namespace Attack
         public override void FindSelectableTiles()
         {
             _tileMovementController.FindSelectableTiles(range, heightAllowance, true, Type.Attack);
+        }
+
+        protected override void RemoveSelectableTiles()
+        {
+            _tileMovementController.RemoveSelectableTiles();
         }
 
         public void Attack(Tile tile)

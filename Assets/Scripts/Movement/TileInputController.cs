@@ -171,5 +171,10 @@ namespace Movement
         {
             playerActions.Value.Tile.Disable();
         }
+
+        public void RemoveSelectableTiles()
+        {
+            _selectableTiles.Remove();
+        }
     }
 }

@@ -21,6 +21,11 @@ namespace Unit
             Debug.Log("Taking " + damage + " damage");
             _currentHealth -= damage;
             healthbar.SetHealth(_currentHealth);
+
+            if (_currentHealth <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }
