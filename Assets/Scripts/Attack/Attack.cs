@@ -11,23 +11,23 @@ namespace Attack
         public int heightAllowance;
         public int damage;
 
-        protected SelectableTiles SelectableTiles;
+        private SelectableTiles _selectableTiles;
         public GameEvent damageDone;
 
         protected virtual void Awake()
         {
-            SelectableTiles = GetComponent<SelectableTiles>();
+            _selectableTiles = GetComponent<SelectableTiles>();
         }
 
         public virtual void FindSelectableTiles()
         {
-            SelectableTiles.Find(range, heightAllowance, true);
+            _selectableTiles.Find(range, heightAllowance, true);
         }
 
-        public void DoDamage(GameObject target)
+        protected void DoDamage(GameObject target)
         {
             target.GetComponent<RuntimeUnitStats>().TakeDamage(damage);
-            SelectableTiles.Remove();
+            _selectableTiles.Remove();
             damageDone.Raise();
         }
     }

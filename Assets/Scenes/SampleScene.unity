@@ -259,6 +259,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player (Archer)
       objectReference: {fileID: 0}
+    - target: {fileID: 5405987082637384863, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
+      propertyPath: tileMoveFrequency
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5405987082637384863, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
+      propertyPath: initialTileMoveDelay
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 5593969242872966207, guid: e6e1ef653185b7c4bb072894529d5157, type: 3}
       propertyPath: unit
       value: 

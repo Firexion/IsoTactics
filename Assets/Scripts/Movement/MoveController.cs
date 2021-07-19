@@ -40,7 +40,7 @@ namespace Movement
         public Tile actualTargetTile;
         protected SelectableTiles SelectableTiles; 
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             SelectableTiles = GetComponent<SelectableTiles>();
             turnTaker = GetComponent<TurnTaker>();
