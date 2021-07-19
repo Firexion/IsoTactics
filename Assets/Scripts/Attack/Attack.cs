@@ -14,7 +14,7 @@ namespace Attack
         protected SelectableTiles SelectableTiles;
         public GameEvent damageDone;
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             SelectableTiles = GetComponent<SelectableTiles>();
         }

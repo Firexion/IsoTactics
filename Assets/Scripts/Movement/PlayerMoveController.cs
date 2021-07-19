@@ -18,7 +18,7 @@ namespace Movement
 
         public PlayerActionsVariable playerActions;
         public GameEvent finishedMoving;
-
+        public GameEvent actionCancelled;
         private void Update()
         {
             if (!IsActive() || !canMove) return;
@@ -139,6 +139,14 @@ namespace Movement
             var t = hit.collider.GetComponent<Tile>();
             if (!t.selectable) return;
             StartMove(t);
+        }
+
+        public void OnCancel(InputAction.CallbackContext context)
+        {
+            SelectableTiles.Remove();
+            playerActions.Value.Tile.SetCallbacks(null);
+            playerActions.Value.Tile.Disable();
+            actionCancelled.Raise();
         }
 
         private void StartMove(Tile tile)

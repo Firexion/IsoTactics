@@ -1,4 +1,5 @@
 ﻿using DefaultNamespace;
+using Events;
 using Movement;
 using Turn;
 using UnityEngine;
@@ -18,7 +19,9 @@ namespace Attack
         [SerializeField] private float tileMoveFrequency = 0.15f;
         [SerializeField] private float initialTileMoveDelay = 0.3f;
 
-        private void Awake()
+        public GameEvent actionCancelled;
+
+        protected override void Awake()
         {
             _turnTaker = GetComponent<TurnTaker>();
             SelectableTiles = GetComponent<SelectableTiles>();
@@ -91,6 +94,14 @@ namespace Attack
             var t = hit.collider.GetComponent<Tile>();
             if (!t.selectable) return;
             DoDamage(t.OccupiedBy);
+        }
+
+        public void OnCancel(InputAction.CallbackContext context)
+        {
+            SelectableTiles.Remove();
+            playerActions.Value.Tile.SetCallbacks(null);
+            playerActions.Value.Tile.Disable();
+            actionCancelled.Raise();
         }
 
         private bool IsActive()

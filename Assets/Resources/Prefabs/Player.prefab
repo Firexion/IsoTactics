@@ -128,6 +128,7 @@ MonoBehaviour:
   currentlySelectedTile: {fileID: 11400000, guid: c22cc8d9235997a4e949a856e5847616, type: 2}
   playerActions: {fileID: 11400000, guid: 912995f6b0f1dd746b6551645d5eee29, type: 2}
   finishedMoving: {fileID: 11400000, guid: c0529b92918099942ab6f1b9c4702273, type: 2}
+  actionCancelled: {fileID: 11400000, guid: 5787b8c798f27cb4b9f0fba111727ed4, type: 2}
 --- !u!114 &5405987082637384850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,6 +222,7 @@ MonoBehaviour:
   invertControls: 1
   tileMoveFrequency: 0.15
   initialTileMoveDelay: 0.3
+  actionCancelled: {fileID: 11400000, guid: 5787b8c798f27cb4b9f0fba111727ed4, type: 2}
 --- !u!1001 &6409889445419854112
 PrefabInstance:
   m_ObjectHideFlags: 0

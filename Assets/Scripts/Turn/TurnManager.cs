@@ -13,6 +13,7 @@ namespace Turn
 
         private void Awake()
         {
+            Debug.Log("There are " + RuntimeSet.Items.Count + " units on the board");
             foreach (var turnTaker in RuntimeSet.Items)
             {
                 AddTurnTaker(turnTaker);
@@ -54,6 +55,7 @@ namespace Turn
 
         private static void AddTurnTaker(TurnTaker turnTaker)
         {
+            Debug.Log("Adding " + turnTaker.Stats.unit.id);
             if (TurnOrder.TryGetValue(turnTaker.NextTurn, out var turnTakersAtTime))
             {
                 turnTakersAtTime.Enqueue(turnTaker);

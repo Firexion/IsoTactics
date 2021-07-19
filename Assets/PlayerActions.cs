@@ -153,6 +153,14 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""d213713e-55d6-494f-b91b-f6c3998fd243"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -296,6 +304,17 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""KeyboardMouse"",
                     ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2da68acf-816b-454f-a074-90e2211ac292"",
+                    ""path"": ""*/{Cancel}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad;KeyboardMouse"",
+                    ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -823,6 +842,7 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         m_Tile_Select = m_Tile.FindAction("Select", throwIfNotFound: true);
         m_Tile_Move = m_Tile.FindAction("Move", throwIfNotFound: true);
         m_Tile_Click = m_Tile.FindAction("Click", throwIfNotFound: true);
+        m_Tile_Cancel = m_Tile.FindAction("Cancel", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -927,6 +947,7 @@ public class @PlayerActions : IInputActionCollection, IDisposable
     private readonly InputAction m_Tile_Select;
     private readonly InputAction m_Tile_Move;
     private readonly InputAction m_Tile_Click;
+    private readonly InputAction m_Tile_Cancel;
     public struct TileActions
     {
         private @PlayerActions m_Wrapper;
@@ -934,6 +955,7 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         public InputAction @Select => m_Wrapper.m_Tile_Select;
         public InputAction @Move => m_Wrapper.m_Tile_Move;
         public InputAction @Click => m_Wrapper.m_Tile_Click;
+        public InputAction @Cancel => m_Wrapper.m_Tile_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_Tile; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -952,6 +974,9 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 @Click.started -= m_Wrapper.m_TileActionsCallbackInterface.OnClick;
                 @Click.performed -= m_Wrapper.m_TileActionsCallbackInterface.OnClick;
                 @Click.canceled -= m_Wrapper.m_TileActionsCallbackInterface.OnClick;
+                @Cancel.started -= m_Wrapper.m_TileActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_TileActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_TileActionsCallbackInterface.OnCancel;
             }
             m_Wrapper.m_TileActionsCallbackInterface = instance;
             if (instance != null)
@@ -965,6 +990,9 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 @Click.started += instance.OnClick;
                 @Click.performed += instance.OnClick;
                 @Click.canceled += instance.OnClick;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
             }
         }
     }
@@ -1094,6 +1122,7 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         void OnSelect(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnClick(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

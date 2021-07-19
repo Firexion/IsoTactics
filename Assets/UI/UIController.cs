@@ -210,7 +210,10 @@ public class UIController : MonoBehaviour, PlayerActions.IUIActions
         if (!activeTurnTaker.IsPlayer()) return;
         _turnStartTime = Time.time;
         _menu.visible = true;
-        FocusNextButton(true);
+        if (_current == ButtonEnum.None || DisabledButtons.Contains(_current))
+        {
+            FocusNextButton(true);    
+        }
         playerActions.Value.UI.Enable();
         menuOpenedEvent.Raise();
     }

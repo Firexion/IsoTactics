@@ -179,6 +179,7 @@ MonoBehaviour:
   range: 1
   heightAllowance: 1
   damage: 20
+  damageDone: {fileID: 11400000, guid: fd2f391a6eafe1041b6bfc6a4cf36595, type: 2}
 --- !u!1001 &1177815516807115031
 PrefabInstance:
   m_ObjectHideFlags: 0
